@@ -4,28 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>OrbitOS V7 // COMMAND CENTER</title>
+    <!-- Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    
     <style>
         /* --- CORE: VARIABLES & RESET --- */
         :root {
             --primary: #00ff41; 
-            --primary-dim: rgba(0, 255, 65, 0.2);
+            --primary-dim: rgba(0, 255, 65, 0.1);
             --primary-glow: 0 0 10px rgba(0, 255, 65, 0.5);
             
             --secondary: #0088ff; 
-            --secondary-dim: rgba(0, 136, 255, 0.2);
+            --secondary-dim: rgba(0, 136, 255, 0.1);
             
             --danger: #ff003c; 
             --warning: #ffcc00;
 
-            --bg-deep: #020202; 
-            --bg-panel: rgba(10, 10, 10, 0.95); 
+            --bg-deep: #050505; 
+            --bg-panel: rgba(10, 12, 10, 0.85); 
             --bg-element: #111;
             
             --border: #333; 
             --text: #e0e0e0; 
             --text-muted: #888;
 
-            --font-mono: 'SF Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
+            --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+            --font-display: 'Orbitron', sans-serif;
             --font-ui: system-ui, -apple-system, sans-serif;
             
             --anim-speed: 0.3s;
@@ -36,9 +43,10 @@
         body { 
             background-color: var(--bg-deep); 
             background-image: 
-                linear-gradient(rgba(0, 255, 65, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 255, 65, 0.03) 1px, transparent 1px);
-            background-size: 30px 30px;
+                radial-gradient(circle at 50% 50%, rgba(0, 255, 65, 0.05) 0%, transparent 50%),
+                linear-gradient(rgba(0, 255, 65, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 65, 0.02) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
             color: var(--text); 
             font-family: var(--font-mono); 
             display: flex; 
@@ -53,33 +61,38 @@
         .terminal-wrapper {
             width: 100%;
             height: 100%;
-            max-width: 1200px;
+            max-width: 1400px;
             max-height: 95vh;
             display: flex;
             flex-direction: column;
             position: relative;
             padding: 10px;
+            opacity: 0; /* Hidden initially for boot sequence */
+            transition: opacity 1s ease-in;
         }
 
         @media (min-width: 768px) {
             .terminal-wrapper {
                 padding: 20px;
-                height: 92vh;
+                height: 95vh;
             }
         }
 
         .terminal-container { 
             flex: 1;
             background: var(--bg-panel); 
-            border: 1px solid var(--border); 
+            border: 1px solid rgba(0, 255, 65, 0.3); 
             border-top: 2px solid var(--primary); 
-            border-radius: 8px; 
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 255, 65, 0.1); 
+            border-radius: 12px; 
+            box-shadow: 
+                0 0 80px rgba(0, 0, 0, 0.8), 
+                0 0 20px rgba(0, 255, 65, 0.1),
+                inset 0 0 100px rgba(0,0,0,0.5); 
             display: flex; 
             flex-direction: column; 
             position: relative; 
             overflow: hidden;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px);
         }
         
         /* CRT/Scanline Effect Overlay */
@@ -87,24 +100,24 @@
             position: absolute; top: 0; left: 0; bottom: 0; right: 0; 
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
                         linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03)); 
-            z-index: 10; 
-            background-size: 100% 3px, 3px 100%; 
+            z-index: 999; 
+            background-size: 100% 4px, 4px 100%; 
             pointer-events: none; 
-            opacity: 0.6;
+            opacity: 0.3;
         }
         
         /* --- HEADER & STATUS --- */
         .header {
             padding: 15px 20px;
             border-bottom: 1px solid var(--border);
-            background: rgba(0,0,0,0.4);
+            background: rgba(0,0,0,0.6);
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            z-index: 11;
+            gap: 15px;
+            z-index: 10;
         }
 
-        @media (min-width: 600px) {
+        @media (min-width: 700px) {
             .header {
                 flex-direction: row;
                 justify-content: space-between;
@@ -113,50 +126,54 @@
         }
 
         .brand {
-            font-size: 1.1rem;
+            font-family: var(--font-display);
+            font-size: 1.4rem;
             font-weight: 700;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
             color: var(--primary);
             text-shadow: var(--primary-glow);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
         }
         
-        .brand::before {
-            content: '';
-            display: block;
-            width: 10px;
-            height: 10px;
+        .brand-icon {
+            width: 12px;
+            height: 12px;
             background: var(--primary);
-            border-radius: 50%;
             box-shadow: var(--primary-glow);
+            transform: rotate(45deg);
             animation: pulse 2s infinite;
         }
 
         .status-panel {
             display: flex;
-            gap: 15px;
-            font-size: 0.75rem;
+            gap: 20px;
+            font-size: 0.7rem;
             color: var(--text-muted);
-            font-family: var(--font-ui);
+            letter-spacing: 1px;
+            background: rgba(0,0,0,0.3);
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: 1px solid #222;
         }
 
         .status-item {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
 
         .status-indicator {
-            width: 6px;
-            height: 6px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
-            background: #444;
+            background: #333;
+            transition: all 0.5s;
         }
 
-        .online .status-indicator { background: var(--primary); box-shadow: 0 0 5px var(--primary); }
-        .offline .status-indicator { background: var(--danger); box-shadow: 0 0 5px var(--danger); }
+        .online .status-indicator { background: var(--primary); box-shadow: 0 0 8px var(--primary); }
+        .offline .status-indicator { background: var(--danger); box-shadow: 0 0 8px var(--danger); }
         .loading .status-indicator { background: var(--warning); animation: blink 0.5s infinite; }
 
         /* --- CONTROLS AREA --- */
@@ -165,9 +182,10 @@
             border-bottom: 1px solid var(--border);
             display: flex;
             gap: 10px;
-            background: rgba(255,255,255,0.02);
-            z-index: 11;
+            background: rgba(255,255,255,0.01);
+            z-index: 10;
             flex-wrap: wrap;
+            align-items: center;
         }
 
         .select-wrapper {
@@ -178,20 +196,20 @@
 
         select {
             width: 100%;
-            background: var(--bg-element);
+            background: rgba(20, 20, 20, 0.8);
             border: 1px solid var(--border);
             color: var(--text);
             padding: 10px 15px;
             border-radius: 4px;
-            font-family: var(--font-ui);
-            font-size: 0.85rem;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
             cursor: pointer;
             appearance: none;
             transition: var(--anim-speed);
         }
 
         select:hover { border-color: var(--primary); }
-        select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-dim); }
+        select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary-dim); }
 
         .select-wrapper::after {
             content: '▼';
@@ -199,25 +217,27 @@
             right: 15px;
             top: 50%;
             transform: translateY(-50%);
-            font-size: 0.7rem;
+            font-size: 0.6rem;
             color: var(--primary);
             pointer-events: none;
         }
         
-        .btn-secondary {
+        .toolbar-btn {
             background: transparent;
             border: 1px solid var(--border);
             color: var(--text-muted);
-            padding: 0 15px;
-            font-size: 0.75rem;
+            padding: 8px 12px;
+            font-size: 0.9rem;
             border-radius: 4px;
             cursor: pointer;
             transition: var(--anim-speed);
-            text-transform: uppercase;
-            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .btn-secondary:hover { border-color: var(--danger); color: var(--danger); }
+        .toolbar-btn:hover { border-color: var(--primary); color: var(--primary); background: rgba(0, 255, 65, 0.05); }
+        .toolbar-btn.active { color: var(--primary); border-color: var(--primary); background: rgba(0, 255, 65, 0.1); }
 
         /* --- CHAT AREA --- */
         #chat-history { 
@@ -226,161 +246,249 @@
             padding: 20px; 
             display: flex; 
             flex-direction: column; 
-            gap: 20px; 
-            z-index: 11; 
+            gap: 24px; 
+            z-index: 10; 
             scroll-behavior: smooth; 
         }
 
         .message { 
-            max-width: 90%; 
-            padding: 15px; 
-            border-radius: 8px; 
+            max-width: 85%; 
+            padding: 20px; 
+            border-radius: 4px; 
             line-height: 1.6; 
             position: relative; 
             word-wrap: break-word; 
-            font-size: 0.95rem; 
-            animation: slideIn 0.3s ease-out;
+            font-size: 0.9rem; 
+            animation: slideIn 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
             font-family: var(--font-ui);
         }
         
         .message strong {
             display: block;
-            margin-bottom: 6px;
-            font-size: 0.75rem;
+            margin-bottom: 8px;
+            font-size: 0.7rem;
             font-family: var(--font-mono);
             letter-spacing: 1px;
             text-transform: uppercase;
-            opacity: 0.8;
+            opacity: 0.7;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 4px;
         }
 
         /* User Message Style */
         .user { 
             align-self: flex-end; 
-            background: linear-gradient(135deg, rgba(0, 51, 0, 0.8), rgba(0, 20, 0, 0.6));
-            border: 1px solid rgba(0, 255, 65, 0.3);
-            border-right: 3px solid var(--primary); 
-            color: #e0ffe0; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            background: linear-gradient(135deg, rgba(0, 40, 0, 0.6), rgba(0, 20, 0, 0.4));
+            border: 1px solid rgba(0, 255, 65, 0.2);
+            border-right: 2px solid var(--primary); 
+            color: #eef; 
+            border-top-right-radius: 0;
         }
-        .user strong { color: var(--primary); text-align: right; }
+        .user strong { color: var(--primary); text-align: right; border-color: rgba(0, 255, 65, 0.2); }
         
         /* Bot Message Style */
         .bot { 
             align-self: flex-start; 
-            background: linear-gradient(135deg, rgba(20, 20, 20, 0.9), rgba(10, 10, 10, 0.8));
-            border: 1px solid var(--border);
-            border-left: 3px solid var(--secondary); 
-            color: #d0d0d0; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            background: linear-gradient(135deg, rgba(20, 25, 30, 0.7), rgba(10, 15, 20, 0.6));
+            border: 1px solid rgba(0, 136, 255, 0.2);
+            border-left: 2px solid var(--secondary); 
+            color: #cfcfcf; 
+            border-top-left-radius: 0;
         }
-        .bot strong { color: var(--secondary); }
+        .bot strong { color: var(--secondary); border-color: rgba(0, 136, 255, 0.2); }
+
+        /* Markdown Styling inside Bot messages */
+        .bot p { margin: 0 0 10px 0; }
+        .bot p:last-child { margin: 0; }
+        .bot code { 
+            background: rgba(0,0,0,0.5); 
+            padding: 2px 5px; 
+            border-radius: 3px; 
+            font-family: var(--font-mono); 
+            font-size: 0.85em; 
+            color: #ff7b72;
+        }
+        .bot pre {
+            background: #1e1e1e !important;
+            border-radius: 6px;
+            margin: 10px 0;
+            border: 1px solid #333;
+            position: relative;
+        }
+        .bot pre code {
+            background: transparent;
+            padding: 15px;
+            display: block;
+            color: #ccc;
+            overflow-x: auto;
+        }
+        
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #252526;
+            padding: 5px 10px;
+            border-top-left-radius: 6px;
+            border-top-right-radius: 6px;
+            border-bottom: 1px solid #333;
+            font-size: 0.75rem;
+            color: #aaa;
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: none;
+            color: #aaa;
+            cursor: pointer;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+        }
+        .copy-btn:hover { color: #fff; }
 
         /* --- INPUT AREA --- */
         .input-wrapper {
             padding: 20px;
             background: rgba(0,0,0,0.6);
             border-top: 1px solid var(--border);
-            z-index: 11;
+            z-index: 10;
         }
 
         .image-preview-area {
-            display: none; /* Flex when active */
-            background: rgba(255, 255, 255, 0.05);
-            padding: 10px;
+            display: none; 
+            background: rgba(0, 255, 65, 0.05);
+            padding: 10px 15px;
             border-radius: 4px;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             align-items: center;
             justify-content: space-between;
-            border: 1px dashed var(--border);
+            border: 1px dashed var(--primary);
+            animation: slideIn 0.3s;
         }
 
         .image-preview-area img {
-            height: 50px;
+            height: 60px;
             border-radius: 4px;
-            border: 1px solid var(--border);
+            border: 1px solid var(--primary);
         }
 
         .input-controls {
             display: flex;
-            gap: 10px;
-            align-items: stretch;
+            gap: 12px;
+            align-items: flex-end;
         }
 
         #userInput {
             flex-grow: 1;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(10, 10, 10, 0.8);
             border: 1px solid var(--border);
             color: var(--text);
             padding: 15px;
-            border-radius: 4px;
+            border-radius: 6px;
             font-family: var(--font-ui);
             font-size: 1rem;
             transition: var(--anim-speed);
+            resize: none;
+            min-height: 54px;
+            max-height: 150px;
+            overflow-y: auto;
         }
 
         #userInput:focus {
             outline: none;
-            border-color: var(--secondary);
-            box-shadow: 0 0 15px rgba(0, 136, 255, 0.1);
-        }
-
-        .btn-icon, .btn-primary {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: var(--anim-speed);
-            font-weight: 700;
-            border: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.1);
         }
 
         .btn-icon {
             width: 50px;
-            background: #222;
+            height: 50px;
+            background: #1a1a1a;
             color: var(--text);
             font-size: 1.2rem;
             border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .btn-icon:hover { background: #333; color: var(--primary); border-color: var(--primary); }
+        .btn-icon:hover { background: #252525; border-color: var(--text); }
+        .btn-icon.recording { color: var(--danger); border-color: var(--danger); animation: pulse 1s infinite; }
 
         .btn-primary {
-            padding: 0 25px;
+            height: 50px;
+            padding: 0 30px;
             background: var(--primary);
             color: #000;
-            font-family: var(--font-mono);
+            border: none;
+            border-radius: 6px;
+            font-family: var(--font-display);
+            font-weight: 700;
             letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
             text-transform: uppercase;
+            font-size: 0.9rem;
         }
         .btn-primary:hover { 
-            background: #00ff55; 
+            background: #33ff77; 
             box-shadow: 0 0 20px rgba(0, 255, 65, 0.4); 
-            transform: translateY(-1px);
+            transform: translateY(-2px);
         }
         .btn-primary:disabled {
             background: #333;
             color: #666;
             cursor: not-allowed;
-            box-shadow: none;
             transform: none;
+            box-shadow: none;
+        }
+
+        /* --- BOOT SEQUENCE --- */
+        #boot-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 40px;
+            font-family: var(--font-mono);
+            color: var(--primary);
+            font-size: 14px;
+            overflow: hidden;
+        }
+        .boot-line {
+            opacity: 0;
+            margin-bottom: 5px;
         }
 
         /* --- SCROLLBAR --- */
-        ::-webkit-scrollbar { width: 8px; } 
-        ::-webkit-scrollbar-track { background: #0a0a0a; } 
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; } 
-        ::-webkit-scrollbar-thumb:hover { background: var(--secondary); }
+        ::-webkit-scrollbar { width: 6px; } 
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); } 
+        ::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; } 
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
         /* --- ANIMATIONS --- */
         @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
         @keyframes blink { 0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
     </style>
 </head>
 <body>
 
-<div class="terminal-wrapper">
+<!-- Boot Screen -->
+<div id="boot-screen">
+    <!-- JS will populate this -->
+</div>
+
+<!-- Audio Assets -->
+<!-- We can use Base64 audio or generate simple beeps via AudioContext. Let's use AudioContext for "cool" procedurally generated sounds to avoid external deps -->
+
+<div class="terminal-wrapper" id="main-interface">
     <div class="terminal-container">
         <!-- Visual Overlay -->
         <div class="scanlines"></div>
@@ -388,19 +496,20 @@
         <!-- Header -->
         <div class="header">
             <div class="brand">
-                ORBITOS V7 // COMMAND CENTER
+                <div class="brand-icon"></div>
+                ORBITOS V7 // COMMAND
             </div>
             <div class="status-panel">
                 <div class="status-item">
-                    <span>OPERATOR: GABRIEL</span>
+                    <span>OP: GABRIEL</span>
                 </div>
                 <div class="status-item" id="c1-wrapper">
                     <div id="c1-dot" class="status-indicator"></div>
-                    <span id="c1-text">VISUAL: CONN...</span>
+                    <span id="c1-text">VISUAL: SYNC...</span>
                 </div>
                 <div class="status-item" id="c2-wrapper">
                     <div id="c2-dot" class="status-indicator"></div>
-                    <span id="c2-text">LOGIC: CONN...</span>
+                    <span id="c2-text">LOGIC: SYNC...</span>
                 </div>
             </div>
         </div>
@@ -409,8 +518,6 @@
         <div class="controls-bar">
             <div class="select-wrapper">
                 <select id="modelSelector">
-                    <!-- ATENÇÃO: Os valores (value) devem ser IDÊNTICOS aos do Python -->
-                    
                     <optgroup label="=== CLUSTER 1: GOOGLE (GEMINI) ===">
                         <option value="Cluster1|✨ Google: Gemini 2.5 Flash Lite ⚡">✨ Gemini 2.5 Flash Lite ⚡ (Novo!)</option>
                         <option value="Cluster1|✨ Google: Gemini 3.0 Pro (Experimental)">✨ Gemini 3.0 Pro (Preview)</option>
@@ -443,16 +550,21 @@
                     </optgroup>
                 </select>
             </div>
-            <button class="btn-secondary" onclick="clearChat()">CLR_MEM</button>
+            
+            <button class="toolbar-btn" onclick="toggleSound()" id="soundBtn">
+                🔊 SND: ON
+            </button>
+            <button class="toolbar-btn" onclick="exportChat()">
+                💾 EXPORT
+            </button>
+            <button class="toolbar-btn" onclick="clearChat()">
+                🗑️ CLEAR
+            </button>
         </div>
 
         <!-- Chat History -->
         <div id="chat-history">
-            <div class="message bot">
-                <strong>SYSTEM</strong>
-                Inicializando OrbitOS V7 Interface...<br>
-                Aguardando uplink com os Clusters Neurais.
-            </div>
+            <!-- Messages will be injected here -->
         </div>
 
         <!-- Input Area -->
@@ -460,16 +572,21 @@
             <div id="imagePreviewContainer" class="image-preview-area">
                 <div style="display:flex; align-items:center; gap:10px;">
                     <img id="imagePreview" alt="Preview">
-                    <span style="font-size:0.8rem; color:#aaa;">Imagem anexada</span>
+                    <div>
+                        <span style="font-size:0.8rem; color:var(--primary); font-weight:bold;">IMAGEM ANEXADA</span><br>
+                        <span style="font-size:0.7rem; color:#aaa;" id="imageName">file.jpg</span>
+                    </div>
                 </div>
-                <button onclick="clearImage()" style="background:none; border:none; color:var(--danger); cursor:pointer; font-weight:bold;">✕ REMOVER</button>
+                <button onclick="clearImage()" style="background:none; border:1px solid var(--danger); padding: 5px 10px; border-radius:4px; color:var(--danger); cursor:pointer; font-size: 0.7rem; font-weight:bold;">DESCARTAR</button>
             </div>
 
             <div class="input-controls">
                 <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
-                <button class="btn-icon" onclick="document.getElementById('fileInput').click()" title="Anexar Imagem">📷</button>
                 
-                <input type="text" id="userInput" placeholder="Insira seu comando..." onkeypress="handleEnter(event)" autofocus autocomplete="off" />
+                <button class="btn-icon" onclick="document.getElementById('fileInput').click()" title="Anexar Imagem">📷</button>
+                <button class="btn-icon" id="micBtn" onclick="toggleVoice()" title="Gravar Voz (Hold)">🎤</button>
+                
+                <textarea id="userInput" placeholder="Insira seu comando..." onkeypress="handleEnter(event)" rows="1"></textarea>
                 
                 <button id="sendBtn" class="btn-primary" onclick="sendMessage()">ENVIAR</button>
             </div>
@@ -488,8 +605,52 @@
 
     let clients = {};
     let selectedFile = null; 
+    let soundEnabled = true;
 
-    // Referências DOM
+    // --- AUDIO SYSTEM (Procedural) ---
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    
+    function playSound(type) {
+        if (!soundEnabled) return;
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        const now = audioCtx.currentTime;
+
+        if (type === 'type') {
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(800, now);
+            osc.frequency.exponentialRampToValueAtTime(100, now + 0.05);
+            gain.gain.setValueAtTime(0.02, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+            osc.start(now);
+            osc.stop(now + 0.05);
+        } else if (type === 'message') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(440, now);
+            osc.frequency.exponentialRampToValueAtTime(880, now + 0.1);
+            gain.gain.setValueAtTime(0.05, now);
+            gain.gain.linearRampToValueAtTime(0, now + 0.3);
+            osc.start(now);
+            osc.stop(now + 0.3);
+        } else if (type === 'error') {
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(100, now);
+            osc.frequency.linearRampToValueAtTime(50, now + 0.3);
+            gain.gain.setValueAtTime(0.1, now);
+            gain.gain.linearRampToValueAtTime(0, now + 0.3);
+            osc.start(now);
+            osc.stop(now + 0.3);
+        } else if (type === 'boot') {
+            // Complex boot sound handled elsewhere or simplified here
+        }
+    }
+
+    // --- DOM Elements ---
     const c1Wrapper = document.getElementById('c1-wrapper');
     const c1Text = document.getElementById('c1-text');
     const c2Wrapper = document.getElementById('c2-wrapper');
@@ -500,6 +661,42 @@
     const imagePreview = document.getElementById('imagePreview');
     const previewContainer = document.getElementById('imagePreviewContainer');
     const userInput = document.getElementById('userInput');
+
+    // --- BOOT SEQUENCE ---
+    async function runBootSequence() {
+        const bootScreen = document.getElementById('boot-screen');
+        const lines = [
+            "ORBITOS KERNEL V7.0.1 INITIALIZING...",
+            "CHECKING MEMORY INTEGRITY... [OK]",
+            "MOUNTING NEURAL CLUSTERS... [OK]",
+            "ESTABLISHING SECURE UPLINK... [OK]",
+            "LOADING UI MODULES... [OK]",
+            "SYSTEM READY."
+        ];
+
+        for (let i = 0; i < lines.length; i++) {
+            const div = document.createElement('div');
+            div.className = 'boot-line';
+            div.innerText = lines[i];
+            bootScreen.appendChild(div);
+            
+            // Random delay between lines
+            await new Promise(r => setTimeout(r, Math.random() * 300 + 100));
+            div.style.opacity = 1;
+            playSound('type');
+        }
+
+        await new Promise(r => setTimeout(r, 500));
+        bootScreen.style.opacity = 0;
+        setTimeout(() => {
+            bootScreen.remove();
+            document.getElementById('main-interface').style.opacity = 1;
+            playSound('message');
+        }, 800);
+    }
+
+    // --- INITIALIZATION ---
+    runBootSequence();
 
     function updateStatus(cluster, status) {
         const wrapper = cluster === "Cluster1" ? c1Wrapper : c2Wrapper;
@@ -524,17 +721,103 @@
     }
 
     async function initSystem() {
+        // Initial Bot Message
+        appendMessage("bot", "Sistema inicializado. Conectando aos clusters...");
+
         await Promise.all([
             connectToCluster("Cluster1", CLUSTERS["Cluster1"]),
             connectToCluster("Cluster2", CLUSTERS["Cluster2"])
         ]);
-        appendMessage("bot", "Uplink estabelecido. Orbital Command pronto para instruções.");
+        
+        // Update last message or add new one
+        const lastMsg = historyDiv.lastElementChild;
+        if(lastMsg) lastMsg.innerHTML = lastMsg.innerHTML.replace("Conectando aos clusters...", "Uplink estabelecido. Orbital Command pronto.");
+        playSound('message');
     }
     
-    // Inicia conexão
     initSystem();
 
-    // --- IMAGEM ---
+    // --- FEATURES ---
+
+    // Toggle Sound
+    window.toggleSound = function() {
+        soundEnabled = !soundEnabled;
+        document.getElementById('soundBtn').innerText = soundEnabled ? "🔊 SND: ON" : "🔇 SND: OFF";
+    }
+
+    // Export Chat
+    window.exportChat = function() {
+        let text = "";
+        document.querySelectorAll('.message').forEach(msg => {
+            const author = msg.classList.contains('user') ? "GABRIEL" : "ORBITOS";
+            // Get text content, basic cleanup
+            text += `[${author}]: ${msg.innerText.replace("GABRIEL", "").replace("ORBITOS", "").trim()}\n\n`;
+        });
+        
+        const blob = new Blob([text], { type: 'text/plain' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `orbitos_chat_${Date.now()}.txt`;
+        a.click();
+    }
+
+    // Copy Code
+    window.copyCode = function(btn) {
+        const codeBlock = btn.parentElement.nextElementSibling;
+        const code = codeBlock.innerText;
+        navigator.clipboard.writeText(code).then(() => {
+            const originalText = btn.innerText;
+            btn.innerText = "COPIADO!";
+            setTimeout(() => btn.innerText = originalText, 2000);
+        });
+    }
+
+    // Voice Input
+    window.toggleVoice = function() {
+        const btn = document.getElementById('micBtn');
+        if (!('webkitSpeechRecognition' in window)) {
+            alert("Seu navegador não suporta reconhecimento de voz.");
+            return;
+        }
+
+        if (window.recognition && window.recognition_active) {
+            window.recognition.stop();
+            return;
+        }
+
+        const recognition = new webkitSpeechRecognition();
+        recognition.lang = 'pt-BR';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        recognition.onstart = function() {
+            window.recognition_active = true;
+            btn.classList.add('recording');
+        };
+
+        recognition.onresult = function(event) {
+            const transcript = event.results[0][0].transcript;
+            userInput.value += (userInput.value ? " " : "") + transcript;
+            adjustTextareaHeight();
+        };
+
+        recognition.onend = function() {
+            window.recognition_active = false;
+            btn.classList.remove('recording');
+        };
+
+        recognition.start();
+        window.recognition = recognition;
+    }
+
+    // Auto-expand Textarea
+    function adjustTextareaHeight() {
+        userInput.style.height = 'auto';
+        userInput.style.height = userInput.scrollHeight + 'px';
+    }
+    userInput.addEventListener('input', adjustTextareaHeight);
+
+    // Image Handling
     window.handleFileSelect = function(event) {
         const file = event.target.files[0];
         if (file) {
@@ -542,6 +825,7 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 imagePreview.src = e.target.result;
+                document.getElementById('imageName').innerText = file.name;
                 previewContainer.style.display = 'flex';
                 userInput.focus();
             }
@@ -555,7 +839,7 @@
         previewContainer.style.display = 'none';
     }
 
-    // --- MENSAGENS ---
+    // --- MESSAGING LOGIC ---
     window.sendMessage = async function() {
         const modelSelect = document.getElementById('modelSelector');
         const userText = userInput.value;
@@ -566,22 +850,27 @@
         const activeClient = clients[targetCluster];
 
         if (!activeClient) { 
-            appendMessage("bot", `<strong>ERRO:</strong> ${targetCluster} desconectado. Verifique a conexão.`); 
+            appendMessage("bot", `**ERRO:** ${targetCluster} desconectado. Verifique a conexão.`); 
+            playSound('error');
             return; 
         }
 
         if (targetCluster === "Cluster2" && selectedFile) {
-            appendMessage("bot", `<strong>AVISO:</strong> Cluster de Lógica não processa imagens.`);
+            appendMessage("bot", `**AVISO:** Cluster de Lógica não processa imagens.`);
             clearImage();
         }
 
         userInput.value = "";
-        let userDisplay = userText;
+        userInput.style.height = 'auto'; // Reset height
+        
+        let userDisplay = userText.replace(/\n/g, "<br>");
         if (selectedFile && targetCluster === "Cluster1") {
             userDisplay += `<br><img src="${imagePreview.src}" style="max-height: 100px; border-radius: 4px; border: 1px solid #444; margin-top:10px;">`;
         }
         
-        appendMessage("user", userDisplay);
+        // Append User Message (Raw HTML allowed here for the image, be careful)
+        appendMessage("user", userDisplay, true);
+        playSound('message');
         setLoading(true);
 
         try {
@@ -592,17 +881,12 @@
                 messageObj = { text: userText, files: [] };
             }
 
-            // --- AQUI ESTÁ O SEGREDO DO CHATINTERFACE ---
-            // O Gradio ChatInterface espera enviar mensagem e histórico.
-            // O retorno é apenas o texto (não um array complexo se usarmos a rota certa)
-            
             const result = await activeClient.predict("/chat", [ 
                 messageObj, 
-                [], // Histórico vazio (ou implemente gestão de estado)
+                [], 
                 modelName 
             ]);
             
-            // Verificação de segurança no retorno
             let responseText = "";
             if (result && result.data && result.data[0]) {
                 responseText = result.data[0];
@@ -611,33 +895,83 @@
             }
 
             appendMessage("bot", responseText);
+            playSound('message');
 
         } catch (error) {
             console.error(error);
             let msg = error.message || String(error);
             if (msg.includes("GPU quota")) msg = "⚠️ COTA GPU EXCEDIDA.";
-            appendMessage("bot", `<strong>ERRO CRÍTICO:</strong> ${msg}`);
+            appendMessage("bot", `**ERRO CRÍTICO:** ${msg}`);
+            playSound('error');
         } finally {
             setLoading(false);
             if (targetCluster === "Cluster1") clearImage(); 
         }
     }
 
-    function appendMessage(role, text) {
+    // Configure Marked
+    marked.setOptions({
+        highlight: function(code, lang) {
+            const language = highlight.getLanguage(lang) ? lang : 'plaintext';
+            return highlight.highlight(code, { language }).value;
+        },
+        langPrefix: 'hljs language-'
+    });
+
+    // Custom Renderer for Copy Buttons
+    const renderer = new marked.Renderer();
+    renderer.code = function(code, infostring, escaped) {
+        const lang = (infostring || 'plaintext').match(/\S*/)[0];
+        const validLang = highlight.getLanguage(lang) ? lang : 'plaintext';
+        const highlighted = highlight.highlight(code, { language: validLang }).value;
+
+        return `
+            <div class="code-wrapper">
+                <div class="code-header">
+                    <span>${lang.toUpperCase()}</span>
+                    <button class="copy-btn" onclick="copyCode(this)">COPIAR</button>
+                </div>
+                <pre><code class="hljs language-${validLang}">${highlighted}</code></pre>
+            </div>
+        `;
+    };
+    marked.use({ renderer });
+
+    function appendMessage(role, text, isUserHtml = false) {
         const div = document.createElement('div'); 
         div.className = "message " + role; 
-        div.innerHTML = (role === "user" ? "<strong>GABRIEL</strong>" : "<strong>ORBITOS AI</strong>") + text;
+        
+        let content = "";
+        if (role === "user") {
+            content = `<strong>GABRIEL</strong>${isUserHtml ? text : text.replace(/</g, "&lt;")}`;
+        } else {
+            // Parse Markdown for Bot
+            const parsed = marked.parse(text);
+            content = `<strong>ORBITOS AI</strong>${parsed}`;
+        }
+
+        div.innerHTML = content;
         historyDiv.appendChild(div); 
+        
+        // Trigger Highlight.js (redundant with marked options but good for safety)
+        if(role === 'bot') {
+            div.querySelectorAll('pre code').forEach((block) => {
+               // hljs.highlightElement(block); // Done by marked
+            });
+        }
+
         historyDiv.scrollTop = historyDiv.scrollHeight;
     }
     
     function setLoading(isLoading) {
         sendBtn.disabled = isLoading; 
-        sendBtn.innerText = isLoading ? "PROCESSANDO..." : "ENVIAR";
+        sendBtn.innerText = isLoading ? "..." : "ENVIAR";
         if (isLoading) {
             sendBtn.style.opacity = "0.7";
+            document.body.style.cursor = "progress";
         } else {
             sendBtn.style.opacity = "1";
+            document.body.style.cursor = "default";
             userInput.focus();
         }
     }
@@ -647,7 +981,10 @@
     }
     
     window.handleEnter = function(e) { 
-        if (e.key === 'Enter') window.sendMessage(); 
+        if (e.key === 'Enter' && !e.shiftKey) { 
+            e.preventDefault();
+            window.sendMessage(); 
+        }
     }
 </script>
 </body>
