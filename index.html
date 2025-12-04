@@ -1,282 +1,281 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gabriel AI Interface 2025</title>
-    <!-- Bibliotecas para Markdown e Code Highlighting -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    
+    <title>OrbitOS V6 // COMMAND CENTER</title>
     <style>
+        /* --- ESTILO ORBITOS: DARK/CYBERPUNK --- */
         :root {
-            --bg-color: #0f172a;
-            --glass-bg: rgba(30, 41, 59, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --accent: #3b82f6;
-            --user-msg: #2563eb;
-            --bot-msg: #334155;
-            --text: #e2e8f0;
+            --primary: #00ff41; --secondary: #0088ff; --danger: #ff003c; 
+            --bg: #050505; --panel: #0a0a0a; --border: #333; --text: #eee; 
+            --user-bg: #003300; --bot-bg: #111;
         }
-
-        body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background-color: var(--bg-color);
-            background-image: radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
-            color: var(--text);
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        .container {
-            width: 95%;
-            max-width: 1000px;
-            height: 95vh;
-            margin-top: 2.5vh;
-            background: var(--glass-bg);
-            backdrop-filter: blur(16px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-
-        /* Header */
-        header {
-            padding: 20px;
-            border-bottom: 1px solid var(--glass-border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        h1 { margin: 0; font-size: 1.2rem; display: flex; align-items: center; gap: 10px; }
-        .status-dot { height: 10px; width: 10px; background-color: #ef4444; border-radius: 50%; display: inline-block; box-shadow: 0 0 10px #ef4444; }
-        .status-online { background-color: #22c55e; box-shadow: 0 0 10px #22c55e; }
-
-        select {
-            background: rgba(0,0,0,0.3);
-            color: white;
-            border: 1px solid var(--glass-border);
-            padding: 8px 12px;
-            border-radius: 8px;
-            outline: none;
-            cursor: pointer;
-        }
-
-        /* Chat Area */
-        #chat-history {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            scroll-behavior: smooth;
-        }
-
-        .message {
-            max-width: 80%;
-            padding: 12px 18px;
-            border-radius: 12px;
-            line-height: 1.5;
-            position: relative;
-            animation: fadeIn 0.3s ease;
-            font-size: 0.95rem;
-        }
-
-        .user-message {
-            align-self: flex-end;
-            background-color: var(--user-msg);
-            color: white;
-            border-bottom-right-radius: 2px;
-        }
-
-        .bot-message {
-            align-self: flex-start;
-            background-color: var(--bot-msg);
-            color: var(--text);
-            border: 1px solid var(--glass-border);
-            border-bottom-left-radius: 2px;
-        }
-
-        .bot-message img { max-width: 100%; border-radius: 8px; margin-top: 10px; }
-        .bot-message pre { background: rgba(0,0,0,0.4); padding: 10px; border-radius: 8px; overflow-x: auto; }
-
-        /* Input Area */
-        .input-area {
-            padding: 20px;
-            border-top: 1px solid var(--glass-border);
-            display: flex;
-            gap: 10px;
-            background: rgba(0,0,0,0.2);
-            border-bottom-left-radius: 20px;
-            border-bottom-right-radius: 20px;
-        }
-
-        input[type="text"] {
-            flex: 1;
-            padding: 15px;
-            border-radius: 12px;
-            border: 1px solid var(--glass-border);
-            background: rgba(255, 255, 255, 0.05);
-            color: white;
-            outline: none;
-            transition: 0.3s;
-        }
-
-        input[type="text"]:focus { background: rgba(255, 255, 255, 0.1); border-color: var(--accent); }
-
-        button {
-            padding: 0 25px;
-            border-radius: 12px;
-            border: none;
-            background: var(--accent);
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        button:hover { filter: brightness(1.1); transform: scale(1.02); }
-        button:disabled { background: #475569; cursor: not-allowed; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        body { background-color: var(--bg); color: var(--text); font-family: 'Consolas', 'Courier New', monospace; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
+        .terminal-container { width: 95%; max-width: 1000px; height: 92vh; background: var(--panel); border: 1px solid var(--border); border-top: 3px solid var(--primary); border-radius: 4px; padding: 20px; box-shadow: 0 0 30px rgba(0, 255, 65, 0.05); display: flex; flex-direction: column; position: relative; }
         
-        /* Loader */
-        .typing-indicator { font-style: italic; color: #94a3b8; font-size: 0.8rem; margin-left: 10px; display: none; }
+        /* Scanline Effect */
+        .terminal-container::before { content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03)); z-index: 2; background-size: 100% 2px, 3px 100%; pointer-events: none; }
+        
+        h1 { text-align: center; margin: 0 0 15px 0; color: var(--primary); text-transform: uppercase; letter-spacing: 4px; font-size: 1.4rem; text-shadow: 0 0 5px var(--primary); }
+        
+        /* Status Bar */
+        .status-bar { display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 15px; font-size: 0.75rem; color: #666; font-weight: bold; }
+        .cluster-status { margin-left: 15px; }
+        .online { color: var(--primary); text-shadow: 0 0 5px var(--primary); }
+        .offline { color: var(--danger); text-shadow: 0 0 5px var(--danger); }
+
+        /* Controls */
+        .controls { display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-bottom: 15px; z-index: 3; }
+        select, input, button { background: #000; border: 1px solid var(--border); color: var(--text); padding: 12px; font-family: inherit; font-size: 0.9rem; transition: 0.2s; }
+        select { color: var(--primary); border-color: var(--primary); cursor: pointer; }
+        select:focus, input:focus { outline: none; border-color: #fff; }
+        button { cursor: pointer; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        button:hover { background: #111; border-color: var(--text); }
+        
+        /* Chat Area */
+        #chat-history { flex-grow: 1; overflow-y: auto; background: #000; border: 1px solid var(--border); padding: 20px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 15px; z-index: 3; scroll-behavior: smooth; }
+        .message { max-width: 85%; padding: 12px 18px; border-radius: 4px; line-height: 1.6; position: relative; word-wrap: break-word; font-size: 0.95rem; }
+        .user { align-self: flex-end; background: var(--user-bg); border-right: 2px solid var(--primary); color: #cfc; }
+        .bot { align-self: flex-start; background: var(--bot-bg); border-left: 2px solid var(--secondary); color: #ccc; }
+        .bot strong { color: var(--secondary); display: block; margin-bottom: 5px; font-size: 0.8rem; }
+        .user strong { color: var(--primary); display: block; margin-bottom: 5px; font-size: 0.8rem; text-align: right; }
+        
+        /* Input Area */
+        .input-area { display: flex; gap: 10px; z-index: 3; align-items: center;}
+        button#sendBtn { background: var(--primary); color: #000; border: none; width: 100px; }
+        button#sendBtn:hover { background: #33ff66; box-shadow: 0 0 15px var(--primary); }
+        button:disabled { background: #222; color: #555; cursor: not-allowed; box-shadow: none; }
+        
+        /* Image Preview */
+        #imagePreviewContainer { display: none; align-items: center; margin-top: 10px; z-index: 3; background: #111; padding: 10px; border: 1px solid var(--border); width: fit-content; }
+        #imagePreview { max-height: 60px; margin-right: 10px; border: 1px solid #555; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; } 
+        ::-webkit-scrollbar-track { background: #000; } 
+        ::-webkit-scrollbar-thumb { background: #333; } 
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <header>
-        <h1>
-            <span id="status" class="status-dot"></span> 
-            Gabriel AI <small style="opacity:0.5; font-size:0.8rem; margin-left:10px;">Backend Python</small>
-        </h1>
-        <select id="model-selector">
-            <option value="🔥 Local H200: Qwen 2.5 Coder 32B">🔥 Local: Qwen 32B Coder</option>
-            <option value="🚀 DeepSeek R1 Distill Qwen 7B">🚀 DeepSeek R1 (Novo)</option>
-            <option value="🇫🇷 Mistral: Large 2512 (Dez/25)">🇫🇷 Mistral Large 2512</option>
-            <option value="✨ Google: Gemini 3.0 Pro (Experimental)">✨ Google Gemini 3.0</option>
-            <option value="☁️ Groq: Llama 3.3 70B">☁️ Groq Llama 3.3</option>
+<div class="terminal-container">
+    <h1>🪐 OrbitOS V6 // COMMAND CENTER</h1>
+    
+    <div class="status-bar">
+        <span>OPERATOR: GABRIEL</span>
+        <div>
+            <span class="cluster-status">APIDOST (HEAVY): <span id="status-c1" class="offline">CONNECTING...</span></span>
+            <span class="cluster-status">APISMALL (LOGIC): <span id="status-c2" class="offline">CONNECTING...</span></span>
+        </div>
+    </div>
+
+    <div class="controls">
+        <select id="modelSelector">
+            <optgroup label="=== CLUSTER 1: GOOGLE (VISION) ===">
+                <option value="Cluster1|✨ Google: Gemini 3.0 Pro (Experimental)">✨ Gemini 3.0 Pro (Preview)</option>
+                <option value="Cluster1|✨ Google: Gemini 2.5 Pro">✨ Gemini 2.5 Pro</option>
+                <option value="Cluster1|✨ Google: Gemini 2.5 Flash">⚡ Gemini 2.5 Flash</option>
+            </optgroup>
+            
+            <optgroup label="=== CLUSTER 1: MISTRAL (SOTA) ===">
+                <option value="Cluster1|🇫🇷 Mistral: Magistral Medium 2509 🆕">👑 Magistral Medium (v2509)</option>
+                <option value="Cluster1|🇫🇷 Mistral: Pixtral Large (Vision) 🖼️">👁️ Pixtral Large (Vision)</option>
+                <option value="Cluster1|🇫🇷 Mistral: Large 2512 (Dez/25)">🏰 Mistral Large (v2512)</option>
+                <option value="Cluster1|🇫🇷 Mistral: Codestral 2508">👨‍💻 Codestral (Code)</option>
+            </optgroup>
+
+            <optgroup label="=== CLUSTER 1: GROQ (FAST) ===">
+                <option value="Cluster1|☁️ Groq: GPT OSS 120B (OpenAI) 🆕">☁️ GPT OSS 120B (Novo!)</option>
+                <option value="Cluster1|☁️ Groq: GPT OSS 20B (OpenAI) 🆕">☁️ GPT OSS 20B (Novo!)</option>
+                <option value="Cluster1|☁️ Groq: Llama 3.3 70B">☁️ Llama 3.3 70B</option>
+            </optgroup>
+
+            <optgroup label="=== CLUSTER 1: LOCAL H200 ===">
+                <option value="Cluster1|🔥 Local H200: Qwen 2.5 Coder 32B">🔥 Qwen 2.5 Coder (H200)</option>
+            </optgroup>
+            
+            <optgroup label="=== CLUSTER 2: REASONING/MATH ===">
+                 <option value="Cluster2|🚀 DeepSeek R1 Distill Qwen 7B (O Mais Inteligente - Novo!)">🧠 DeepSeek R1 (Logic)</option>
+                 <option value="Cluster2|🐳 DeepSeek Math 7B (Especialista Antigo)">📐 DeepSeek Math</option>
+                 <option value="Cluster2|🧪 Qwen 3 4B Instruct (Experimental)">🧪 Qwen 3 Experimental</option>
+            </optgroup>
         </select>
-    </header>
+        <button onclick="clearChat()">CLR_MEM</button>
+    </div>
 
     <div id="chat-history">
-        <div class="message bot-message">Olá, Gabriel! Sou a Berta Web Interface. Escolha seu modelo acima e vamos conversar! 🍪</div>
+        <div class="message bot">
+            <strong>SYSTEM:</strong> Inicializando OrbitOS V6...<br>
+            Aguardando uplink com os Clusters Neurais.
+        </div>
+    </div>
+
+    <div id="imagePreviewContainer">
+        <img id="imagePreview">
+        <button onclick="clearImage()" style="background:transparent; color:#ff003c; border:none; width:auto;">[REMOVER]</button>
     </div>
 
     <div class="input-area">
-        <input type="text" id="user-input" placeholder="Digite sua mensagem aqui..." autocomplete="off">
-        <button id="send-btn" onclick="sendMessage()">Enviar 🚀</button>
+        <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
+        <button id="uploadBtn" onclick="document.getElementById('fileInput').click()" title="Anexar Imagem">📷</button>
+        
+        <input type="text" id="userInput" placeholder="Insira seu comando..." onkeypress="handleEnter(event)" autofocus style="flex-grow: 1;" />
+        <button id="sendBtn" onclick="sendMessage()">ENVIAR</button>
     </div>
-    <div class="typing-indicator" id="loader">Berta está pensando...</div>
 </div>
 
-<!-- SCRIPT DE CONEXÃO -->
 <script type="module">
-    // Importando a biblioteca oficial do Gradio Client
-    import { Client } from "https://cdn.jsdelivr.net/npm/@gradio/client@0.1.4/+esm";
+    import { Client } from "https://cdn.jsdelivr.net/npm/@gradio/client/+esm";
 
-    const statusDot = document.getElementById('status');
-    const chatHistory = document.getElementById('chat-history');
-    const userInput = document.getElementById('user-input');
-    const sendBtn = document.getElementById('send-btn');
-    const loader = document.getElementById('loader');
-    const modelSelector = document.getElementById('model-selector');
-
-    let app = null;
-    
     // --- CONFIGURAÇÃO ---
-    // SE VOCÊ RODAR LOCAL, USE: "http://127.0.0.1:7860"
-    // SE ESTIVER NO HUGGING FACE SPACES, COLOQUE A URL DO SPACE AQUI:
-    const BACKEND_URL = "http://127.0.0.1:7860"; 
+    // Se o Space for Privado, coloque o Token. Se for Público, deixe aspas vazias "".
+    const HF_TOKEN = ""; 
+    
+    const CLUSTERS = {
+        "Cluster1": "Madras1/APIDOST", 
+        "Cluster2": "Madras1/APISMALL" 
+    };
 
-    // Inicialização
-    async function connect() {
+    let clients = {};
+    let selectedFile = null; 
+
+    // Referências DOM
+    const statusC1 = document.getElementById('status-c1');
+    const statusC2 = document.getElementById('status-c2');
+    const sendBtn = document.getElementById('sendBtn');
+    const historyDiv = document.getElementById('chat-history');
+    const imagePreview = document.getElementById('imagePreview');
+    const previewContainer = document.getElementById('imagePreviewContainer');
+
+    // --- CONEXÃO ---
+    async function connectToCluster(name, id, statusElement) {
         try {
-            console.log("Tentando conectar a Berta Backend...");
-            app = await Client.connect(BACKEND_URL);
-            statusDot.classList.add('status-online');
-            console.log("✅ Conectado com sucesso!");
-        } catch (error) {
-            console.error("Erro ao conectar:", error);
-            appendMessage("bot", "❌ Erro: Não consegui conectar ao Backend Python. Verifique se ele está rodando na porta 7860.");
+            const options = HF_TOKEN ? { hf_token: HF_TOKEN } : {};
+            clients[name] = await Client.connect(id, options);
+            statusElement.innerText = "ONLINE";
+            statusElement.className = "online";
+        } catch (e) {
+            console.error(`Erro ao conectar ${name}:`, e);
+            statusElement.innerText = "OFFLINE";
+            statusElement.className = "offline";
         }
     }
 
-    connect();
+    async function initSystem() {
+        await Promise.all([
+            connectToCluster("Cluster1", CLUSTERS["Cluster1"], statusC1),
+            connectToCluster("Cluster2", CLUSTERS["Cluster2"], statusC2)
+        ]);
+        appendMessage("bot", "<strong>SYSTEM:</strong> Uplink estabelecido. Orbital Command pronto.");
+    }
+    initSystem();
 
-    // Função de Envio
+    // --- IMAGEM ---
+    window.handleFileSelect = function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            selectedFile = file;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagePreview.src = e.target.result;
+                previewContainer.style.display = 'flex';
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    window.clearImage = function() {
+        selectedFile = null;
+        document.getElementById('fileInput').value = "";
+        previewContainer.style.display = 'none';
+    }
+
+    // --- ENVIO (A CORREÇÃO ESTÁ AQUI) ---
     window.sendMessage = async function() {
-        const text = userInput.value.trim();
-        if (!text || !app) return;
+        const input = document.getElementById('userInput');
+        const modelSelect = document.getElementById('modelSelector');
+        const userText = input.value;
+        
+        if (!userText.trim() && !selectedFile) return;
 
-        // UI Updates
-        appendMessage("user", text);
-        userInput.value = "";
-        userInput.disabled = true;
-        sendBtn.disabled = true;
-        loader.style.display = "block";
+        const [targetCluster, modelName] = modelSelect.value.split('|');
+        const activeClient = clients[targetCluster];
 
-        const selectedModel = modelSelector.value;
+        if (!activeClient) { 
+            appendMessage("bot", `<strong>ERRO:</strong> ${targetCluster} desconectado.`); 
+            return; 
+        }
+
+        // Validação APISMALL (Sem Imagem)
+        if (targetCluster === "Cluster2" && selectedFile) {
+            appendMessage("bot", `<strong>AVISO:</strong> Cluster de Lógica não processa imagens.`);
+            clearImage();
+        }
+
+        // Mostra mensagem do usuário
+        input.value = "";
+        let userDisplay = userText;
+        if (selectedFile && targetCluster === "Cluster1") {
+            userDisplay += `<br><img src="${imagePreview.src}" style="max-height: 150px; border: 1px solid #333; margin-top:5px;">`;
+        }
+        appendMessage("user", userDisplay);
+        setLoading(true);
 
         try {
-            // Chama a função 'predict' do Gradio Backend
-            // Nota: O índice 0 geralmente é a função principal do ChatInterface
-            const result = await app.predict(0, [
-                text,           // Mensagem Atual
-                [],             // Histórico (O Gradio gerencia, mas enviamos vazio para resetar ou manter estado no backend se necessário)
-                selectedModel   // Dropdown input extra
-            ]);
+            // 1. Prepara o objeto de mensagem (Texto + Arquivo)
+            let messageObj;
+            if (selectedFile && targetCluster === "Cluster1") {
+                messageObj = { text: userText, files: [selectedFile] };
+            } else {
+                messageObj = { text: userText, files: [] };
+            }
 
-            // A resposta do ChatInterface geralmente vem como uma string ou objeto
-            // Dependendo de como o Python retorna, pode ser result.data[0]
-            const botResponse = result.data[0]; 
-            appendMessage("bot", botResponse);
+            // 2. AQUI ESTAVA O ERRO! 
+            // O Gradio exige um ARRAY ordenado de argumentos: [INPUT_1, INPUT_2, INPUT_3]
+            // Input 1: message (MultimodalTextbox)
+            // Input 2: history (JSON) -> Mandamos lista vazia []
+            // Input 3: model_selector (Dropdown)
+            
+            const result = await activeClient.predict("/chat", [ 
+                messageObj, 
+                [], 
+                modelName 
+            ]);
+            
+            // O resultado vem em result.data[0]
+            appendMessage("bot", result.data[0]);
 
         } catch (error) {
             console.error(error);
-            appendMessage("bot", "⚠️ Ops, erro na comunicação com a API: " + error.message);
+            let msg = error.message || String(error);
+            if (msg.includes("GPU quota")) msg = "⚠️ COTA GPU EXCEDIDA.";
+            appendMessage("bot", `<strong>ERRO CRÍTICO:</strong> ${msg}`);
         } finally {
-            userInput.disabled = false;
-            sendBtn.disabled = false;
-            loader.style.display = "none";
-            userInput.focus();
+            setLoading(false);
+            if (targetCluster === "Cluster1") clearImage(); 
         }
     }
 
-    // Renderização na Tela
     function appendMessage(role, text) {
-        const div = document.createElement('div');
-        div.className = `message ${role}-message`;
-        
-        if (role === 'bot') {
-            // Renderiza Markdown para o Bot
-            div.innerHTML = marked.parse(text);
-            // Aplica highlight nos códigos
-            div.querySelectorAll('pre code').forEach((block) => {
-                hljs.highlightElement(block);
-            });
-        } else {
-            div.textContent = text;
-        }
-
-        chatHistory.appendChild(div);
-        chatHistory.scrollTop = chatHistory.scrollHeight;
+        const div = document.createElement('div'); 
+        div.className = "message " + role; 
+        div.innerHTML = (role === "user" ? "<strong>GABRIEL:</strong>" : "<strong>ORBITOS AI:</strong>") + text;
+        historyDiv.appendChild(div); 
+        historyDiv.scrollTop = historyDiv.scrollHeight;
     }
-
-    // Enviar com Enter
-    userInput.addEventListener("keypress", function(event) {
-        if (event.key === "Enter") window.sendMessage();
-    });
+    
+    function setLoading(isLoading) {
+        sendBtn.disabled = isLoading; 
+        sendBtn.innerText = isLoading ? "..." : "ENVIAR";
+        if(!isLoading) document.getElementById('userInput').focus();
+    }
+    
+    window.clearChat = function() { 
+        historyDiv.innerHTML = '<div class="message bot"><strong>SYSTEM:</strong> Buffer limpo.</div>'; 
+    }
+    window.handleEnter = function(e) { 
+        if (e.key === 'Enter') window.sendMessage(); 
+    }
 </script>
-
-</body>
-</html>
