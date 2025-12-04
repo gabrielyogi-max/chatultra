@@ -934,8 +934,9 @@
             ]);
             
             let responseText = "";
-            if (result && result.data && result.data[0]) {
-                responseText = result.data[0];
+            if (result && result.data && result.data[0] != null) {
+                // Ensure it's a string
+                responseText = String(result.data[0]);
             } else {
                 responseText = "Error: Empty response.";
             }
@@ -992,8 +993,13 @@
             content = `<strong>GABRIEL</strong>${isUserHtml ? text : text.replace(/</g, "&lt;")}`;
         } else {
             // Parse Markdown for Bot
-            const parsed = marked.parse(text);
-            content = `<strong>ORBITOS AI</strong>${parsed}`;
+            try {
+                const parsed = marked.parse(String(text || ""));
+                content = `<strong>ORBITOS AI</strong>${parsed}`;
+            } catch (e) {
+                console.error("Markdown Error:", e);
+                content = `<strong>ORBITOS AI</strong>${text}`;
+            }
         }
 
         div.innerHTML = content;
