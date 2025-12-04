@@ -57,6 +57,18 @@
             overflow: hidden; 
         }
 
+        /* --- ICONS (SVG) --- */
+        .icon {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+            vertical-align: middle;
+        }
+        .icon-lg {
+            width: 24px;
+            height: 24px;
+        }
+
         /* --- LAYOUT: MAIN TERMINAL --- */
         .terminal-wrapper {
             width: 100%;
@@ -202,23 +214,27 @@
             padding: 10px 15px;
             border-radius: 4px;
             font-family: var(--font-mono);
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             cursor: pointer;
             appearance: none;
             transition: var(--anim-speed);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         select:hover { border-color: var(--primary); }
         select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary-dim); }
 
         .select-wrapper::after {
-            content: '▼';
+            content: '';
             position: absolute;
             right: 15px;
             top: 50%;
-            transform: translateY(-50%);
-            font-size: 0.6rem;
-            color: var(--primary);
+            transform: translateY(-70%) rotate(45deg);
+            width: 8px;
+            height: 8px;
+            border-right: 2px solid var(--primary);
+            border-bottom: 2px solid var(--primary);
             pointer-events: none;
         }
         
@@ -227,13 +243,16 @@
             border: 1px solid var(--border);
             color: var(--text-muted);
             padding: 8px 12px;
-            font-size: 0.9rem;
+            font-size: 0.75rem;
             border-radius: 4px;
             cursor: pointer;
             transition: var(--anim-speed);
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
+            font-family: var(--font-mono);
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
         .toolbar-btn:hover { border-color: var(--primary); color: var(--primary); background: rgba(0, 255, 65, 0.05); }
@@ -404,8 +423,7 @@
             width: 50px;
             height: 50px;
             background: #1a1a1a;
-            color: var(--text);
-            font-size: 1.2rem;
+            color: var(--text-muted);
             border: 1px solid var(--border);
             border-radius: 6px;
             cursor: pointer;
@@ -414,8 +432,9 @@
             align-items: center;
             justify-content: center;
         }
-        .btn-icon:hover { background: #252525; border-color: var(--text); }
+        .btn-icon:hover { background: #252525; border-color: var(--text); color: var(--text); }
         .btn-icon.recording { color: var(--danger); border-color: var(--danger); animation: pulse 1s infinite; }
+        .btn-icon.recording svg { fill: var(--danger); }
 
         .btn-primary {
             height: 50px;
@@ -485,8 +504,16 @@
     <!-- JS will populate this -->
 </div>
 
-<!-- Audio Assets -->
-<!-- We can use Base64 audio or generate simple beeps via AudioContext. Let's use AudioContext for "cool" procedurally generated sounds to avoid external deps -->
+<!-- SVGs -->
+<svg style="display: none;">
+    <symbol id="icon-sound" viewBox="0 0 24 24"><path d="M14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77zm-4 0a9 9 0 0 0-9 9 9 9 0 0 0 9 9 9 9 0 0 0 9-9 9 9 0 0 0-9-9zm0 0v17.54l-7.5-7.5h-5.5v-2.06h5.5l7.5-7.5zm3.5 3.5c1.24.86 2.05 2.29 2.05 3.96s-.81 3.1-2.05 3.96v-1.85c.34-.48.55-1.07.55-1.71s-.21-1.23-.55-1.71v-2.65z" fill="none"/><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></symbol>
+    <symbol id="icon-mute" viewBox="0 0 24 24"><path d="M7 9v6h4l5 5V4l-5 5H7z" opacity=".3"/><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73 4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></symbol>
+    <symbol id="icon-save" viewBox="0 0 24 24"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></symbol>
+    <symbol id="icon-trash" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></symbol>
+    <symbol id="icon-camera" viewBox="0 0 24 24"><path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm6 15H9v-2h6v2zm0-4H9V8h6v5z"/></symbol> <!-- Simplified -->
+    <symbol id="icon-camera-filled" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></symbol>
+    <symbol id="icon-mic" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></symbol>
+</svg>
 
 <div class="terminal-wrapper" id="main-interface">
     <div class="terminal-container">
@@ -518,47 +545,50 @@
         <div class="controls-bar">
             <div class="select-wrapper">
                 <select id="modelSelector">
-                    <optgroup label="=== CLUSTER 1: GOOGLE (GEMINI) ===">
-                        <option value="Cluster1|✨ Google: Gemini 2.5 Flash Lite ⚡">✨ Gemini 2.5 Flash Lite ⚡ (Novo!)</option>
-                        <option value="Cluster1|✨ Google: Gemini 3.0 Pro (Experimental)">✨ Gemini 3.0 Pro (Preview)</option>
-                        <option value="Cluster1|✨ Google: Gemini 2.5 Pro">✨ Gemini 2.5 Pro</option>
-                        <option value="Cluster1|✨ Google: Gemini 2.5 Flash">⚡ Gemini 2.5 Flash</option>
-                        <option value="Cluster1|✨ Google: Gemini 2.0 Flash">⚡ Gemini 2.0 Flash</option>
+                    <optgroup label="[ CLUSTER 1 // GOOGLE GEMINI ]">
+                        <option value="Cluster1|✨ Google: Gemini 2.5 Flash Lite ⚡">GEMINI 2.5 FLASH LITE (NEW)</option>
+                        <option value="Cluster1|✨ Google: Gemini 3.0 Pro (Experimental)">GEMINI 3.0 PRO (PREVIEW)</option>
+                        <option value="Cluster1|✨ Google: Gemini 2.5 Pro">GEMINI 2.5 PRO</option>
+                        <option value="Cluster1|✨ Google: Gemini 2.5 Flash">GEMINI 2.5 FLASH</option>
+                        <option value="Cluster1|✨ Google: Gemini 2.0 Flash">GEMINI 2.0 FLASH</option>
                     </optgroup>
                     
-                    <optgroup label="=== CLUSTER 1: MISTRAL (SOTA) ===">
-                        <option value="Cluster1|🇫🇷 Mistral: Magistral Medium 2509">👑 Magistral Medium (v2509)</option>
-                        <option value="Cluster1|🇫🇷 Mistral: Pixtral Large (Vision) 🖼️">👁️ Pixtral Large (Vision)</option>
-                        <option value="Cluster1|🇫🇷 Mistral: Large 2512 (Dez/25)">🏰 Mistral Large (v2512)</option>
-                        <option value="Cluster1|🇫🇷 Mistral: Codestral 2508">👨‍💻 Codestral (Code)</option>
+                    <optgroup label="[ CLUSTER 1 // MISTRAL AI ]">
+                        <option value="Cluster1|🇫🇷 Mistral: Magistral Medium 2509">MISTRAL MEDIUM (v2509)</option>
+                        <option value="Cluster1|🇫🇷 Mistral: Pixtral Large (Vision) 🖼️">PIXTRAL LARGE (VISION)</option>
+                        <option value="Cluster1|🇫🇷 Mistral: Large 2512 (Dez/25)">MISTRAL LARGE (v2512)</option>
+                        <option value="Cluster1|🇫🇷 Mistral: Codestral 2508">CODESTRAL (CODE)</option>
                     </optgroup>
         
-                    <optgroup label="=== CLUSTER 1: GROQ (FAST) ===">
-                        <option value="Cluster1|☁️ Groq: GPT OSS 120B (OpenAI)">☁️ GPT OSS 120B (OpenAI)</option>
-                        <option value="Cluster1|☁️ Groq: GPT OSS 20B (OpenAI)">☁️ GPT OSS 20B (OpenAI)</option>
-                        <option value="Cluster1|☁️ Groq: Llama 3.3 70B">☁️ Llama 3.3 70B</option>
+                    <optgroup label="[ CLUSTER 1 // GROQ INFERENCE ]">
+                        <option value="Cluster1|☁️ Groq: GPT OSS 120B (OpenAI)">GPT OSS 120B (OPENAI)</option>
+                        <option value="Cluster1|☁️ Groq: GPT OSS 20B (OpenAI)">GPT OSS 20B (OPENAI)</option>
+                        <option value="Cluster1|☁️ Groq: Llama 3.3 70B">LLAMA 3.3 70B</option>
                     </optgroup>
         
-                    <optgroup label="=== CLUSTER 1: LOCAL H200 ===">
-                        <option value="Cluster1|🔥 Local H200: Qwen 2.5 Coder 32B">🔥 Qwen 2.5 Coder (H200)</option>
+                    <optgroup label="[ CLUSTER 1 // LOCAL H200 ]">
+                        <option value="Cluster1|🔥 Local H200: Qwen 2.5 Coder 32B">QWEN 2.5 CODER (H200)</option>
                     </optgroup>
                     
-                    <optgroup label="=== CLUSTER 2: REASONING/MATH ===">
-                         <option value="Cluster2|🚀 DeepSeek R1 Distill Qwen 7B (O Mais Inteligente - Novo!)">🧠 DeepSeek R1 (Logic)</option>
-                         <option value="Cluster2|🐳 DeepSeek Math 7B (Especialista Antigo)">📐 DeepSeek Math</option>
-                         <option value="Cluster2|🧪 Qwen 3 4B Instruct (Experimental)">🧪 Qwen 3 Experimental</option>
+                    <optgroup label="[ CLUSTER 2 // LOGIC & MATH ]">
+                         <option value="Cluster2|🚀 DeepSeek R1 Distill Qwen 7B (O Mais Inteligente - Novo!)">DEEPSEEK R1 (LOGIC)</option>
+                         <option value="Cluster2|🐳 DeepSeek Math 7B (Especialista Antigo)">DEEPSEEK MATH</option>
+                         <option value="Cluster2|🧪 Qwen 3 4B Instruct (Experimental)">QWEN 3 EXPERIMENTAL</option>
                     </optgroup>
                 </select>
             </div>
             
             <button class="toolbar-btn" onclick="toggleSound()" id="soundBtn">
-                🔊 SND: ON
+                <svg class="icon"><use href="#icon-sound" id="sndIconUse"/></svg>
+                <span id="sndText">AUDIO</span>
             </button>
             <button class="toolbar-btn" onclick="exportChat()">
-                💾 EXPORT
+                <svg class="icon"><use href="#icon-save"/></svg>
+                <span>SAVE</span>
             </button>
             <button class="toolbar-btn" onclick="clearChat()">
-                🗑️ CLEAR
+                <svg class="icon"><use href="#icon-trash"/></svg>
+                <span>CLEAR</span>
             </button>
         </div>
 
@@ -573,22 +603,26 @@
                 <div style="display:flex; align-items:center; gap:10px;">
                     <img id="imagePreview" alt="Preview">
                     <div>
-                        <span style="font-size:0.8rem; color:var(--primary); font-weight:bold;">IMAGEM ANEXADA</span><br>
+                        <span style="font-size:0.8rem; color:var(--primary); font-weight:bold;">ATTACHMENT ACQUIRED</span><br>
                         <span style="font-size:0.7rem; color:#aaa;" id="imageName">file.jpg</span>
                     </div>
                 </div>
-                <button onclick="clearImage()" style="background:none; border:1px solid var(--danger); padding: 5px 10px; border-radius:4px; color:var(--danger); cursor:pointer; font-size: 0.7rem; font-weight:bold;">DESCARTAR</button>
+                <button onclick="clearImage()" style="background:none; border:1px solid var(--danger); padding: 5px 10px; border-radius:4px; color:var(--danger); cursor:pointer; font-size: 0.7rem; font-weight:bold;">DISCARD</button>
             </div>
 
             <div class="input-controls">
                 <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
                 
-                <button class="btn-icon" onclick="document.getElementById('fileInput').click()" title="Anexar Imagem">📷</button>
-                <button class="btn-icon" id="micBtn" onclick="toggleVoice()" title="Gravar Voz (Hold)">🎤</button>
+                <button class="btn-icon" onclick="document.getElementById('fileInput').click()" title="Attach Image">
+                    <svg class="icon-lg"><use href="#icon-camera-filled"/></svg>
+                </button>
+                <button class="btn-icon" id="micBtn" onclick="toggleVoice()" title="Record (Hold)">
+                    <svg class="icon-lg"><use href="#icon-mic"/></svg>
+                </button>
                 
-                <textarea id="userInput" placeholder="Insira seu comando..." onkeypress="handleEnter(event)" rows="1"></textarea>
+                <textarea id="userInput" placeholder="ENTER COMMAND..." onkeypress="handleEnter(event)" rows="1"></textarea>
                 
-                <button id="sendBtn" class="btn-primary" onclick="sendMessage()">ENVIAR</button>
+                <button id="sendBtn" class="btn-primary" onclick="sendMessage()">SEND</button>
             </div>
         </div>
     </div>
@@ -645,8 +679,6 @@
             gain.gain.linearRampToValueAtTime(0, now + 0.3);
             osc.start(now);
             osc.stop(now + 0.3);
-        } else if (type === 'boot') {
-            // Complex boot sound handled elsewhere or simplified here
         }
     }
 
@@ -666,7 +698,7 @@
     async function runBootSequence() {
         const bootScreen = document.getElementById('boot-screen');
         const lines = [
-            "ORBITOS KERNEL V7.0.1 INITIALIZING...",
+            "ORBITOS KERNEL V7.1.0 INITIALIZING...",
             "CHECKING MEMORY INTEGRITY... [OK]",
             "MOUNTING NEURAL CLUSTERS... [OK]",
             "ESTABLISHING SECURE UPLINK... [OK]",
@@ -722,7 +754,7 @@
 
     async function initSystem() {
         // Initial Bot Message
-        appendMessage("bot", "Sistema inicializado. Conectando aos clusters...");
+        appendMessage("bot", "SYSTEM INITIALIZED. CONNECTING TO CLUSTERS...");
 
         await Promise.all([
             connectToCluster("Cluster1", CLUSTERS["Cluster1"]),
@@ -731,7 +763,7 @@
         
         // Update last message or add new one
         const lastMsg = historyDiv.lastElementChild;
-        if(lastMsg) lastMsg.innerHTML = lastMsg.innerHTML.replace("Conectando aos clusters...", "Uplink estabelecido. Orbital Command pronto.");
+        if(lastMsg) lastMsg.innerHTML = lastMsg.innerHTML.replace("CONNECTING TO CLUSTERS...", "UPLINK ESTABLISHED. ORBITAL COMMAND READY.");
         playSound('message');
     }
     
@@ -742,7 +774,18 @@
     // Toggle Sound
     window.toggleSound = function() {
         soundEnabled = !soundEnabled;
-        document.getElementById('soundBtn').innerText = soundEnabled ? "🔊 SND: ON" : "🔇 SND: OFF";
+        const iconUse = document.getElementById('sndIconUse');
+        const text = document.getElementById('sndText');
+        
+        if (soundEnabled) {
+            iconUse.setAttribute('href', '#icon-sound');
+            text.innerText = "AUDIO";
+            text.style.opacity = 1;
+        } else {
+            iconUse.setAttribute('href', '#icon-mute');
+            text.innerText = "MUTE";
+            text.style.opacity = 0.5;
+        }
     }
 
     // Export Chat
@@ -767,7 +810,7 @@
         const code = codeBlock.innerText;
         navigator.clipboard.writeText(code).then(() => {
             const originalText = btn.innerText;
-            btn.innerText = "COPIADO!";
+            btn.innerText = "COPIED!";
             setTimeout(() => btn.innerText = originalText, 2000);
         });
     }
@@ -776,7 +819,7 @@
     window.toggleVoice = function() {
         const btn = document.getElementById('micBtn');
         if (!('webkitSpeechRecognition' in window)) {
-            alert("Seu navegador não suporta reconhecimento de voz.");
+            alert("Voice recognition not supported.");
             return;
         }
 
@@ -850,25 +893,28 @@
         const activeClient = clients[targetCluster];
 
         if (!activeClient) { 
-            appendMessage("bot", `**ERRO:** ${targetCluster} desconectado. Verifique a conexão.`); 
+            appendMessage("bot", `**ERROR:** ${targetCluster} DISCONNECTED.`); 
             playSound('error');
             return; 
         }
 
         if (targetCluster === "Cluster2" && selectedFile) {
-            appendMessage("bot", `**AVISO:** Cluster de Lógica não processa imagens.`);
+            appendMessage("bot", `**WARNING:** LOGIC CLUSTER DOES NOT SUPPORT VISION.`);
             clearImage();
         }
 
         userInput.value = "";
         userInput.style.height = 'auto'; // Reset height
         
-        let userDisplay = userText.replace(/\n/g, "<br>");
+        // Escape user text to prevent XSS, but preserve newlines
+        let safeText = userText.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        let userDisplay = safeText.replace(/\n/g, "<br>");
+
         if (selectedFile && targetCluster === "Cluster1") {
             userDisplay += `<br><img src="${imagePreview.src}" style="max-height: 100px; border-radius: 4px; border: 1px solid #444; margin-top:10px;">`;
         }
         
-        // Append User Message (Raw HTML allowed here for the image, be careful)
+        // Append User Message
         appendMessage("user", userDisplay, true);
         playSound('message');
         setLoading(true);
@@ -891,7 +937,7 @@
             if (result && result.data && result.data[0]) {
                 responseText = result.data[0];
             } else {
-                responseText = "Erro: Resposta vazia do servidor.";
+                responseText = "Error: Empty response.";
             }
 
             appendMessage("bot", responseText);
@@ -900,8 +946,8 @@
         } catch (error) {
             console.error(error);
             let msg = error.message || String(error);
-            if (msg.includes("GPU quota")) msg = "⚠️ COTA GPU EXCEDIDA.";
-            appendMessage("bot", `**ERRO CRÍTICO:** ${msg}`);
+            if (msg.includes("GPU quota")) msg = "⚠️ GPU QUOTA EXCEEDED.";
+            appendMessage("bot", `**CRITICAL ERROR:** ${msg}`);
             playSound('error');
         } finally {
             setLoading(false);
@@ -912,8 +958,8 @@
     // Configure Marked
     marked.setOptions({
         highlight: function(code, lang) {
-            const language = highlight.getLanguage(lang) ? lang : 'plaintext';
-            return highlight.highlight(code, { language }).value;
+            const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+            return hljs.highlight(code, { language }).value;
         },
         langPrefix: 'hljs language-'
     });
@@ -922,14 +968,14 @@
     const renderer = new marked.Renderer();
     renderer.code = function(code, infostring, escaped) {
         const lang = (infostring || 'plaintext').match(/\S*/)[0];
-        const validLang = highlight.getLanguage(lang) ? lang : 'plaintext';
-        const highlighted = highlight.highlight(code, { language: validLang }).value;
+        const validLang = hljs.getLanguage(lang) ? lang : 'plaintext';
+        const highlighted = hljs.highlight(code, { language: validLang }).value;
 
         return `
             <div class="code-wrapper">
                 <div class="code-header">
                     <span>${lang.toUpperCase()}</span>
-                    <button class="copy-btn" onclick="copyCode(this)">COPIAR</button>
+                    <button class="copy-btn" onclick="copyCode(this)">COPY</button>
                 </div>
                 <pre><code class="hljs language-${validLang}">${highlighted}</code></pre>
             </div>
@@ -952,20 +998,11 @@
 
         div.innerHTML = content;
         historyDiv.appendChild(div); 
-        
-        // Trigger Highlight.js (redundant with marked options but good for safety)
-        if(role === 'bot') {
-            div.querySelectorAll('pre code').forEach((block) => {
-               // hljs.highlightElement(block); // Done by marked
-            });
-        }
-
-        historyDiv.scrollTop = historyDiv.scrollHeight;
     }
     
     function setLoading(isLoading) {
         sendBtn.disabled = isLoading; 
-        sendBtn.innerText = isLoading ? "..." : "ENVIAR";
+        sendBtn.innerText = isLoading ? "..." : "SEND";
         if (isLoading) {
             sendBtn.style.opacity = "0.7";
             document.body.style.cursor = "progress";
@@ -977,7 +1014,7 @@
     }
     
     window.clearChat = function() { 
-        historyDiv.innerHTML = '<div class="message bot"><strong>SYSTEM</strong>Buffer de memória limpo.</div>'; 
+        historyDiv.innerHTML = '<div class="message bot"><strong>SYSTEM</strong>MEMORY BUFFER CLEARED.</div>'; 
     }
     
     window.handleEnter = function(e) { 
