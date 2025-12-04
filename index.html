@@ -409,22 +409,26 @@
         <div class="controls-bar">
             <div class="select-wrapper">
                 <select id="modelSelector">
-                    <optgroup label="=== CLUSTER 1: GOOGLE (VISION) ===">
+                    <!-- ATENÇÃO: Os valores (value) devem ser IDÊNTICOS aos do Python -->
+                    
+                    <optgroup label="=== CLUSTER 1: GOOGLE (GEMINI) ===">
+                        <option value="Cluster1|✨ Google: Gemini 2.5 Flash Lite ⚡">✨ Gemini 2.5 Flash Lite ⚡ (Novo!)</option>
                         <option value="Cluster1|✨ Google: Gemini 3.0 Pro (Experimental)">✨ Gemini 3.0 Pro (Preview)</option>
                         <option value="Cluster1|✨ Google: Gemini 2.5 Pro">✨ Gemini 2.5 Pro</option>
                         <option value="Cluster1|✨ Google: Gemini 2.5 Flash">⚡ Gemini 2.5 Flash</option>
+                        <option value="Cluster1|✨ Google: Gemini 2.0 Flash">⚡ Gemini 2.0 Flash</option>
                     </optgroup>
                     
                     <optgroup label="=== CLUSTER 1: MISTRAL (SOTA) ===">
-                        <option value="Cluster1|🇫🇷 Mistral: Magistral Medium 2509 🆕">👑 Magistral Medium (v2509)</option>
+                        <option value="Cluster1|🇫🇷 Mistral: Magistral Medium 2509">👑 Magistral Medium (v2509)</option>
                         <option value="Cluster1|🇫🇷 Mistral: Pixtral Large (Vision) 🖼️">👁️ Pixtral Large (Vision)</option>
                         <option value="Cluster1|🇫🇷 Mistral: Large 2512 (Dez/25)">🏰 Mistral Large (v2512)</option>
                         <option value="Cluster1|🇫🇷 Mistral: Codestral 2508">👨‍💻 Codestral (Code)</option>
                     </optgroup>
         
                     <optgroup label="=== CLUSTER 1: GROQ (FAST) ===">
-                        <option value="Cluster1|☁️ Groq: GPT OSS 120B (OpenAI) 🆕">☁️ GPT OSS 120B (Novo!)</option>
-                        <option value="Cluster1|☁️ Groq: GPT OSS 20B (OpenAI) 🆕">☁️ GPT OSS 20B (Novo!)</option>
+                        <option value="Cluster1|☁️ Groq: GPT OSS 120B (OpenAI)">☁️ GPT OSS 120B (OpenAI)</option>
+                        <option value="Cluster1|☁️ Groq: GPT OSS 20B (OpenAI)">☁️ GPT OSS 20B (OpenAI)</option>
                         <option value="Cluster1|☁️ Groq: Llama 3.3 70B">☁️ Llama 3.3 70B</option>
                     </optgroup>
         
@@ -588,13 +592,25 @@
                 messageObj = { text: userText, files: [] };
             }
 
+            // --- AQUI ESTÁ O SEGREDO DO CHATINTERFACE ---
+            // O Gradio ChatInterface espera enviar mensagem e histórico.
+            // O retorno é apenas o texto (não um array complexo se usarmos a rota certa)
+            
             const result = await activeClient.predict("/chat", [ 
                 messageObj, 
-                [], 
+                [], // Histórico vazio (ou implemente gestão de estado)
                 modelName 
             ]);
             
-            appendMessage("bot", result.data[0]);
+            // Verificação de segurança no retorno
+            let responseText = "";
+            if (result && result.data && result.data[0]) {
+                responseText = result.data[0];
+            } else {
+                responseText = "Erro: Resposta vazia do servidor.";
+            }
+
+            appendMessage("bot", responseText);
 
         } catch (error) {
             console.error(error);
