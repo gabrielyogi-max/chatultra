@@ -2,137 +2,481 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OrbitOS V6 // COMMAND CENTER</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>OrbitOS V7 // COMMAND CENTER</title>
     <style>
-        /* --- ESTILO ORBITOS: DARK/CYBERPUNK --- */
+        /* --- CORE: VARIABLES & RESET --- */
         :root {
-            --primary: #00ff41; --secondary: #0088ff; --danger: #ff003c; 
-            --bg: #050505; --panel: #0a0a0a; --border: #333; --text: #eee; 
-            --user-bg: #003300; --bot-bg: #111;
+            --primary: #00ff41; 
+            --primary-dim: rgba(0, 255, 65, 0.2);
+            --primary-glow: 0 0 10px rgba(0, 255, 65, 0.5);
+            
+            --secondary: #0088ff; 
+            --secondary-dim: rgba(0, 136, 255, 0.2);
+            
+            --danger: #ff003c; 
+            --warning: #ffcc00;
+
+            --bg-deep: #020202; 
+            --bg-panel: rgba(10, 10, 10, 0.95); 
+            --bg-element: #111;
+            
+            --border: #333; 
+            --text: #e0e0e0; 
+            --text-muted: #888;
+
+            --font-mono: 'SF Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
+            --font-ui: system-ui, -apple-system, sans-serif;
+            
+            --anim-speed: 0.3s;
         }
-        body { background-color: var(--bg); color: var(--text); font-family: 'Consolas', 'Courier New', monospace; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
-        .terminal-container { width: 95%; max-width: 1000px; height: 92vh; background: var(--panel); border: 1px solid var(--border); border-top: 3px solid var(--primary); border-radius: 4px; padding: 20px; box-shadow: 0 0 30px rgba(0, 255, 65, 0.05); display: flex; flex-direction: column; position: relative; }
-        
-        /* Scanline Effect */
-        .terminal-container::before { content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03)); z-index: 2; background-size: 100% 2px, 3px 100%; pointer-events: none; }
-        
-        h1 { text-align: center; margin: 0 0 15px 0; color: var(--primary); text-transform: uppercase; letter-spacing: 4px; font-size: 1.4rem; text-shadow: 0 0 5px var(--primary); }
-        
-        /* Status Bar */
-        .status-bar { display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 15px; font-size: 0.75rem; color: #666; font-weight: bold; }
-        .cluster-status { margin-left: 15px; }
-        .online { color: var(--primary); text-shadow: 0 0 5px var(--primary); }
-        .offline { color: var(--danger); text-shadow: 0 0 5px var(--danger); }
 
-        /* Controls */
-        .controls { display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-bottom: 15px; z-index: 3; }
-        select, input, button { background: #000; border: 1px solid var(--border); color: var(--text); padding: 12px; font-family: inherit; font-size: 0.9rem; transition: 0.2s; }
-        select { color: var(--primary); border-color: var(--primary); cursor: pointer; }
-        select:focus, input:focus { outline: none; border-color: #fff; }
-        button { cursor: pointer; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
-        button:hover { background: #111; border-color: var(--text); }
-        
-        /* Chat Area */
-        #chat-history { flex-grow: 1; overflow-y: auto; background: #000; border: 1px solid var(--border); padding: 20px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 15px; z-index: 3; scroll-behavior: smooth; }
-        .message { max-width: 85%; padding: 12px 18px; border-radius: 4px; line-height: 1.6; position: relative; word-wrap: break-word; font-size: 0.95rem; }
-        .user { align-self: flex-end; background: var(--user-bg); border-right: 2px solid var(--primary); color: #cfc; }
-        .bot { align-self: flex-start; background: var(--bot-bg); border-left: 2px solid var(--secondary); color: #ccc; }
-        .bot strong { color: var(--secondary); display: block; margin-bottom: 5px; font-size: 0.8rem; }
-        .user strong { color: var(--primary); display: block; margin-bottom: 5px; font-size: 0.8rem; text-align: right; }
-        
-        /* Input Area */
-        .input-area { display: flex; gap: 10px; z-index: 3; align-items: center;}
-        button#sendBtn { background: var(--primary); color: #000; border: none; width: 100px; }
-        button#sendBtn:hover { background: #33ff66; box-shadow: 0 0 15px var(--primary); }
-        button:disabled { background: #222; color: #555; cursor: not-allowed; box-shadow: none; }
-        
-        /* Image Preview */
-        #imagePreviewContainer { display: none; align-items: center; margin-top: 10px; z-index: 3; background: #111; padding: 10px; border: 1px solid var(--border); width: fit-content; }
-        #imagePreview { max-height: 60px; margin-right: 10px; border: 1px solid #555; }
+        * { box-sizing: border-box; }
 
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 6px; } 
-        ::-webkit-scrollbar-track { background: #000; } 
-        ::-webkit-scrollbar-thumb { background: #333; } 
-        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+        body { 
+            background-color: var(--bg-deep); 
+            background-image: 
+                linear-gradient(rgba(0, 255, 65, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 65, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+            color: var(--text); 
+            font-family: var(--font-mono); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+            overflow: hidden; 
+        }
+
+        /* --- LAYOUT: MAIN TERMINAL --- */
+        .terminal-wrapper {
+            width: 100%;
+            height: 100%;
+            max-width: 1200px;
+            max-height: 95vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            padding: 10px;
+        }
+
+        @media (min-width: 768px) {
+            .terminal-wrapper {
+                padding: 20px;
+                height: 92vh;
+            }
+        }
+
+        .terminal-container { 
+            flex: 1;
+            background: var(--bg-panel); 
+            border: 1px solid var(--border); 
+            border-top: 2px solid var(--primary); 
+            border-radius: 8px; 
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 255, 65, 0.1); 
+            display: flex; 
+            flex-direction: column; 
+            position: relative; 
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        
+        /* CRT/Scanline Effect Overlay */
+        .scanlines { 
+            position: absolute; top: 0; left: 0; bottom: 0; right: 0; 
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03)); 
+            z-index: 10; 
+            background-size: 100% 3px, 3px 100%; 
+            pointer-events: none; 
+            opacity: 0.6;
+        }
+        
+        /* --- HEADER & STATUS --- */
+        .header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 11;
+        }
+
+        @media (min-width: 600px) {
+            .header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+
+        .brand {
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--primary);
+            text-shadow: var(--primary-glow);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .brand::before {
+            content: '';
+            display: block;
+            width: 10px;
+            height: 10px;
+            background: var(--primary);
+            border-radius: 50%;
+            box-shadow: var(--primary-glow);
+            animation: pulse 2s infinite;
+        }
+
+        .status-panel {
+            display: flex;
+            gap: 15px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: var(--font-ui);
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-indicator {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #444;
+        }
+
+        .online .status-indicator { background: var(--primary); box-shadow: 0 0 5px var(--primary); }
+        .offline .status-indicator { background: var(--danger); box-shadow: 0 0 5px var(--danger); }
+        .loading .status-indicator { background: var(--warning); animation: blink 0.5s infinite; }
+
+        /* --- CONTROLS AREA --- */
+        .controls-bar {
+            padding: 10px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 10px;
+            background: rgba(255,255,255,0.02);
+            z-index: 11;
+            flex-wrap: wrap;
+        }
+
+        .select-wrapper {
+            flex-grow: 1;
+            position: relative;
+            min-width: 200px;
+        }
+
+        select {
+            width: 100%;
+            background: var(--bg-element);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 10px 15px;
+            border-radius: 4px;
+            font-family: var(--font-ui);
+            font-size: 0.85rem;
+            cursor: pointer;
+            appearance: none;
+            transition: var(--anim-speed);
+        }
+
+        select:hover { border-color: var(--primary); }
+        select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-dim); }
+
+        .select-wrapper::after {
+            content: '▼';
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.7rem;
+            color: var(--primary);
+            pointer-events: none;
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 0 15px;
+            font-size: 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--anim-speed);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .btn-secondary:hover { border-color: var(--danger); color: var(--danger); }
+
+        /* --- CHAT AREA --- */
+        #chat-history { 
+            flex-grow: 1; 
+            overflow-y: auto; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 20px; 
+            z-index: 11; 
+            scroll-behavior: smooth; 
+        }
+
+        .message { 
+            max-width: 90%; 
+            padding: 15px; 
+            border-radius: 8px; 
+            line-height: 1.6; 
+            position: relative; 
+            word-wrap: break-word; 
+            font-size: 0.95rem; 
+            animation: slideIn 0.3s ease-out;
+            font-family: var(--font-ui);
+        }
+        
+        .message strong {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.75rem;
+            font-family: var(--font-mono);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            opacity: 0.8;
+        }
+
+        /* User Message Style */
+        .user { 
+            align-self: flex-end; 
+            background: linear-gradient(135deg, rgba(0, 51, 0, 0.8), rgba(0, 20, 0, 0.6));
+            border: 1px solid rgba(0, 255, 65, 0.3);
+            border-right: 3px solid var(--primary); 
+            color: #e0ffe0; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .user strong { color: var(--primary); text-align: right; }
+        
+        /* Bot Message Style */
+        .bot { 
+            align-self: flex-start; 
+            background: linear-gradient(135deg, rgba(20, 20, 20, 0.9), rgba(10, 10, 10, 0.8));
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--secondary); 
+            color: #d0d0d0; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .bot strong { color: var(--secondary); }
+
+        /* --- INPUT AREA --- */
+        .input-wrapper {
+            padding: 20px;
+            background: rgba(0,0,0,0.6);
+            border-top: 1px solid var(--border);
+            z-index: 11;
+        }
+
+        .image-preview-area {
+            display: none; /* Flex when active */
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px dashed var(--border);
+        }
+
+        .image-preview-area img {
+            height: 50px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+        }
+
+        .input-controls {
+            display: flex;
+            gap: 10px;
+            align-items: stretch;
+        }
+
+        #userInput {
+            flex-grow: 1;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 15px;
+            border-radius: 4px;
+            font-family: var(--font-ui);
+            font-size: 1rem;
+            transition: var(--anim-speed);
+        }
+
+        #userInput:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 15px rgba(0, 136, 255, 0.1);
+        }
+
+        .btn-icon, .btn-primary {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: var(--anim-speed);
+            font-weight: 700;
+            border: none;
+        }
+
+        .btn-icon {
+            width: 50px;
+            background: #222;
+            color: var(--text);
+            font-size: 1.2rem;
+            border: 1px solid var(--border);
+        }
+        .btn-icon:hover { background: #333; color: var(--primary); border-color: var(--primary); }
+
+        .btn-primary {
+            padding: 0 25px;
+            background: var(--primary);
+            color: #000;
+            font-family: var(--font-mono);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .btn-primary:hover { 
+            background: #00ff55; 
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.4); 
+            transform: translateY(-1px);
+        }
+        .btn-primary:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* --- SCROLLBAR --- */
+        ::-webkit-scrollbar { width: 8px; } 
+        ::-webkit-scrollbar-track { background: #0a0a0a; } 
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; } 
+        ::-webkit-scrollbar-thumb:hover { background: var(--secondary); }
+
+        /* --- ANIMATIONS --- */
+        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+        @keyframes blink { 0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
     </style>
 </head>
 <body>
 
-<div class="terminal-container">
-    <h1>🪐 OrbitOS V6 // COMMAND CENTER</h1>
-    
-    <div class="status-bar">
-        <span>OPERATOR: GABRIEL</span>
-        <div>
-            <span class="cluster-status">APIDOST (HEAVY): <span id="status-c1" class="offline">CONNECTING...</span></span>
-            <span class="cluster-status">APISMALL (LOGIC): <span id="status-c2" class="offline">CONNECTING...</span></span>
+<div class="terminal-wrapper">
+    <div class="terminal-container">
+        <!-- Visual Overlay -->
+        <div class="scanlines"></div>
+
+        <!-- Header -->
+        <div class="header">
+            <div class="brand">
+                ORBITOS V7 // COMMAND CENTER
+            </div>
+            <div class="status-panel">
+                <div class="status-item">
+                    <span>OPERATOR: GABRIEL</span>
+                </div>
+                <div class="status-item" id="c1-wrapper">
+                    <div id="c1-dot" class="status-indicator"></div>
+                    <span id="c1-text">VISUAL: CONN...</span>
+                </div>
+                <div class="status-item" id="c2-wrapper">
+                    <div id="c2-dot" class="status-indicator"></div>
+                    <span id="c2-text">LOGIC: CONN...</span>
+                </div>
+            </div>
         </div>
-    </div>
 
-    <div class="controls">
-        <select id="modelSelector">
-            <optgroup label="=== CLUSTER 1: GOOGLE (VISION) ===">
-                <option value="Cluster1|✨ Google: Gemini 3.0 Pro (Experimental)">✨ Gemini 3.0 Pro (Preview)</option>
-                <option value="Cluster1|✨ Google: Gemini 2.5 Pro">✨ Gemini 2.5 Pro</option>
-                <option value="Cluster1|✨ Google: Gemini 2.5 Flash">⚡ Gemini 2.5 Flash</option>
-            </optgroup>
-            
-            <optgroup label="=== CLUSTER 1: MISTRAL (SOTA) ===">
-                <option value="Cluster1|🇫🇷 Mistral: Magistral Medium 2509 🆕">👑 Magistral Medium (v2509)</option>
-                <option value="Cluster1|🇫🇷 Mistral: Pixtral Large (Vision) 🖼️">👁️ Pixtral Large (Vision)</option>
-                <option value="Cluster1|🇫🇷 Mistral: Large 2512 (Dez/25)">🏰 Mistral Large (v2512)</option>
-                <option value="Cluster1|🇫🇷 Mistral: Codestral 2508">👨‍💻 Codestral (Code)</option>
-            </optgroup>
-
-            <optgroup label="=== CLUSTER 1: GROQ (FAST) ===">
-                <option value="Cluster1|☁️ Groq: GPT OSS 120B (OpenAI) 🆕">☁️ GPT OSS 120B (Novo!)</option>
-                <option value="Cluster1|☁️ Groq: GPT OSS 20B (OpenAI) 🆕">☁️ GPT OSS 20B (Novo!)</option>
-                <option value="Cluster1|☁️ Groq: Llama 3.3 70B">☁️ Llama 3.3 70B</option>
-            </optgroup>
-
-            <optgroup label="=== CLUSTER 1: LOCAL H200 ===">
-                <option value="Cluster1|🔥 Local H200: Qwen 2.5 Coder 32B">🔥 Qwen 2.5 Coder (H200)</option>
-            </optgroup>
-            
-            <optgroup label="=== CLUSTER 2: REASONING/MATH ===">
-                 <option value="Cluster2|🚀 DeepSeek R1 Distill Qwen 7B (O Mais Inteligente - Novo!)">🧠 DeepSeek R1 (Logic)</option>
-                 <option value="Cluster2|🐳 DeepSeek Math 7B (Especialista Antigo)">📐 DeepSeek Math</option>
-                 <option value="Cluster2|🧪 Qwen 3 4B Instruct (Experimental)">🧪 Qwen 3 Experimental</option>
-            </optgroup>
-        </select>
-        <button onclick="clearChat()">CLR_MEM</button>
-    </div>
-
-    <div id="chat-history">
-        <div class="message bot">
-            <strong>SYSTEM:</strong> Inicializando OrbitOS V6...<br>
-            Aguardando uplink com os Clusters Neurais.
-        </div>
-    </div>
-
-    <div id="imagePreviewContainer">
-        <img id="imagePreview">
-        <button onclick="clearImage()" style="background:transparent; color:#ff003c; border:none; width:auto;">[REMOVER]</button>
-    </div>
-
-    <div class="input-area">
-        <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
-        <button id="uploadBtn" onclick="document.getElementById('fileInput').click()" title="Anexar Imagem">📷</button>
+        <!-- Controls -->
+        <div class="controls-bar">
+            <div class="select-wrapper">
+                <select id="modelSelector">
+                    <optgroup label="=== CLUSTER 1: GOOGLE (VISION) ===">
+                        <option value="Cluster1|✨ Google: Gemini 3.0 Pro (Experimental)">✨ Gemini 3.0 Pro (Preview)</option>
+                        <option value="Cluster1|✨ Google: Gemini 2.5 Pro">✨ Gemini 2.5 Pro</option>
+                        <option value="Cluster1|✨ Google: Gemini 2.5 Flash">⚡ Gemini 2.5 Flash</option>
+                    </optgroup>
+                    
+                    <optgroup label="=== CLUSTER 1: MISTRAL (SOTA) ===">
+                        <option value="Cluster1|🇫🇷 Mistral: Magistral Medium 2509 🆕">👑 Magistral Medium (v2509)</option>
+                        <option value="Cluster1|🇫🇷 Mistral: Pixtral Large (Vision) 🖼️">👁️ Pixtral Large (Vision)</option>
+                        <option value="Cluster1|🇫🇷 Mistral: Large 2512 (Dez/25)">🏰 Mistral Large (v2512)</option>
+                        <option value="Cluster1|🇫🇷 Mistral: Codestral 2508">👨‍💻 Codestral (Code)</option>
+                    </optgroup>
         
-        <input type="text" id="userInput" placeholder="Insira seu comando..." onkeypress="handleEnter(event)" autofocus style="flex-grow: 1;" />
-        <button id="sendBtn" onclick="sendMessage()">ENVIAR</button>
+                    <optgroup label="=== CLUSTER 1: GROQ (FAST) ===">
+                        <option value="Cluster1|☁️ Groq: GPT OSS 120B (OpenAI) 🆕">☁️ GPT OSS 120B (Novo!)</option>
+                        <option value="Cluster1|☁️ Groq: GPT OSS 20B (OpenAI) 🆕">☁️ GPT OSS 20B (Novo!)</option>
+                        <option value="Cluster1|☁️ Groq: Llama 3.3 70B">☁️ Llama 3.3 70B</option>
+                    </optgroup>
+        
+                    <optgroup label="=== CLUSTER 1: LOCAL H200 ===">
+                        <option value="Cluster1|🔥 Local H200: Qwen 2.5 Coder 32B">🔥 Qwen 2.5 Coder (H200)</option>
+                    </optgroup>
+                    
+                    <optgroup label="=== CLUSTER 2: REASONING/MATH ===">
+                         <option value="Cluster2|🚀 DeepSeek R1 Distill Qwen 7B (O Mais Inteligente - Novo!)">🧠 DeepSeek R1 (Logic)</option>
+                         <option value="Cluster2|🐳 DeepSeek Math 7B (Especialista Antigo)">📐 DeepSeek Math</option>
+                         <option value="Cluster2|🧪 Qwen 3 4B Instruct (Experimental)">🧪 Qwen 3 Experimental</option>
+                    </optgroup>
+                </select>
+            </div>
+            <button class="btn-secondary" onclick="clearChat()">CLR_MEM</button>
+        </div>
+
+        <!-- Chat History -->
+        <div id="chat-history">
+            <div class="message bot">
+                <strong>SYSTEM</strong>
+                Inicializando OrbitOS V7 Interface...<br>
+                Aguardando uplink com os Clusters Neurais.
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="input-wrapper">
+            <div id="imagePreviewContainer" class="image-preview-area">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <img id="imagePreview" alt="Preview">
+                    <span style="font-size:0.8rem; color:#aaa;">Imagem anexada</span>
+                </div>
+                <button onclick="clearImage()" style="background:none; border:none; color:var(--danger); cursor:pointer; font-weight:bold;">✕ REMOVER</button>
+            </div>
+
+            <div class="input-controls">
+                <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
+                <button class="btn-icon" onclick="document.getElementById('fileInput').click()" title="Anexar Imagem">📷</button>
+                
+                <input type="text" id="userInput" placeholder="Insira seu comando..." onkeypress="handleEnter(event)" autofocus autocomplete="off" />
+                
+                <button id="sendBtn" class="btn-primary" onclick="sendMessage()">ENVIAR</button>
+            </div>
+        </div>
     </div>
 </div>
 
 <script type="module">
     import { Client } from "https://cdn.jsdelivr.net/npm/@gradio/client/+esm";
 
-    // --- CONFIGURAÇÃO ---
-    // Se o Space for Privado, coloque o Token. Se for Público, deixe aspas vazias "".
     const HF_TOKEN = ""; 
-    
     const CLUSTERS = {
         "Cluster1": "Madras1/APIDOST", 
         "Cluster2": "Madras1/APISMALL" 
@@ -142,34 +486,48 @@
     let selectedFile = null; 
 
     // Referências DOM
-    const statusC1 = document.getElementById('status-c1');
-    const statusC2 = document.getElementById('status-c2');
+    const c1Wrapper = document.getElementById('c1-wrapper');
+    const c1Text = document.getElementById('c1-text');
+    const c2Wrapper = document.getElementById('c2-wrapper');
+    const c2Text = document.getElementById('c2-text');
+
     const sendBtn = document.getElementById('sendBtn');
     const historyDiv = document.getElementById('chat-history');
     const imagePreview = document.getElementById('imagePreview');
     const previewContainer = document.getElementById('imagePreviewContainer');
+    const userInput = document.getElementById('userInput');
 
-    // --- CONEXÃO ---
-    async function connectToCluster(name, id, statusElement) {
+    function updateStatus(cluster, status) {
+        const wrapper = cluster === "Cluster1" ? c1Wrapper : c2Wrapper;
+        const textSpan = cluster === "Cluster1" ? c1Text : c2Text;
+        
+        wrapper.className = "status-item " + status;
+        textSpan.innerText = cluster === "Cluster1" 
+            ? (status === "online" ? "VISUAL: ONLINE" : "VISUAL: OFFLINE")
+            : (status === "online" ? "LOGIC: ONLINE" : "LOGIC: OFFLINE");
+    }
+
+    async function connectToCluster(name, id) {
+        updateStatus(name, "loading");
         try {
             const options = HF_TOKEN ? { hf_token: HF_TOKEN } : {};
             clients[name] = await Client.connect(id, options);
-            statusElement.innerText = "ONLINE";
-            statusElement.className = "online";
+            updateStatus(name, "online");
         } catch (e) {
             console.error(`Erro ao conectar ${name}:`, e);
-            statusElement.innerText = "OFFLINE";
-            statusElement.className = "offline";
+            updateStatus(name, "offline");
         }
     }
 
     async function initSystem() {
         await Promise.all([
-            connectToCluster("Cluster1", CLUSTERS["Cluster1"], statusC1),
-            connectToCluster("Cluster2", CLUSTERS["Cluster2"], statusC2)
+            connectToCluster("Cluster1", CLUSTERS["Cluster1"]),
+            connectToCluster("Cluster2", CLUSTERS["Cluster2"])
         ]);
-        appendMessage("bot", "<strong>SYSTEM:</strong> Uplink estabelecido. Orbital Command pronto.");
+        appendMessage("bot", "Uplink estabelecido. Orbital Command pronto para instruções.");
     }
+    
+    // Inicia conexão
     initSystem();
 
     // --- IMAGEM ---
@@ -181,6 +539,7 @@
             reader.onload = function(e) {
                 imagePreview.src = e.target.result;
                 previewContainer.style.display = 'flex';
+                userInput.focus();
             }
             reader.readAsDataURL(file);
         }
@@ -192,11 +551,10 @@
         previewContainer.style.display = 'none';
     }
 
-    // --- ENVIO (A CORREÇÃO ESTÁ AQUI) ---
+    // --- MENSAGENS ---
     window.sendMessage = async function() {
-        const input = document.getElementById('userInput');
         const modelSelect = document.getElementById('modelSelector');
-        const userText = input.value;
+        const userText = userInput.value;
         
         if (!userText.trim() && !selectedFile) return;
 
@@ -204,27 +562,25 @@
         const activeClient = clients[targetCluster];
 
         if (!activeClient) { 
-            appendMessage("bot", `<strong>ERRO:</strong> ${targetCluster} desconectado.`); 
+            appendMessage("bot", `<strong>ERRO:</strong> ${targetCluster} desconectado. Verifique a conexão.`); 
             return; 
         }
 
-        // Validação APISMALL (Sem Imagem)
         if (targetCluster === "Cluster2" && selectedFile) {
             appendMessage("bot", `<strong>AVISO:</strong> Cluster de Lógica não processa imagens.`);
             clearImage();
         }
 
-        // Mostra mensagem do usuário
-        input.value = "";
+        userInput.value = "";
         let userDisplay = userText;
         if (selectedFile && targetCluster === "Cluster1") {
-            userDisplay += `<br><img src="${imagePreview.src}" style="max-height: 150px; border: 1px solid #333; margin-top:5px;">`;
+            userDisplay += `<br><img src="${imagePreview.src}" style="max-height: 100px; border-radius: 4px; border: 1px solid #444; margin-top:10px;">`;
         }
+        
         appendMessage("user", userDisplay);
         setLoading(true);
 
         try {
-            // 1. Prepara o objeto de mensagem (Texto + Arquivo)
             let messageObj;
             if (selectedFile && targetCluster === "Cluster1") {
                 messageObj = { text: userText, files: [selectedFile] };
@@ -232,19 +588,12 @@
                 messageObj = { text: userText, files: [] };
             }
 
-            // 2. AQUI ESTAVA O ERRO! 
-            // O Gradio exige um ARRAY ordenado de argumentos: [INPUT_1, INPUT_2, INPUT_3]
-            // Input 1: message (MultimodalTextbox)
-            // Input 2: history (JSON) -> Mandamos lista vazia []
-            // Input 3: model_selector (Dropdown)
-            
             const result = await activeClient.predict("/chat", [ 
                 messageObj, 
                 [], 
                 modelName 
             ]);
             
-            // O resultado vem em result.data[0]
             appendMessage("bot", result.data[0]);
 
         } catch (error) {
@@ -261,21 +610,29 @@
     function appendMessage(role, text) {
         const div = document.createElement('div'); 
         div.className = "message " + role; 
-        div.innerHTML = (role === "user" ? "<strong>GABRIEL:</strong>" : "<strong>ORBITOS AI:</strong>") + text;
+        div.innerHTML = (role === "user" ? "<strong>GABRIEL</strong>" : "<strong>ORBITOS AI</strong>") + text;
         historyDiv.appendChild(div); 
         historyDiv.scrollTop = historyDiv.scrollHeight;
     }
     
     function setLoading(isLoading) {
         sendBtn.disabled = isLoading; 
-        sendBtn.innerText = isLoading ? "..." : "ENVIAR";
-        if(!isLoading) document.getElementById('userInput').focus();
+        sendBtn.innerText = isLoading ? "PROCESSANDO..." : "ENVIAR";
+        if (isLoading) {
+            sendBtn.style.opacity = "0.7";
+        } else {
+            sendBtn.style.opacity = "1";
+            userInput.focus();
+        }
     }
     
     window.clearChat = function() { 
-        historyDiv.innerHTML = '<div class="message bot"><strong>SYSTEM:</strong> Buffer limpo.</div>'; 
+        historyDiv.innerHTML = '<div class="message bot"><strong>SYSTEM</strong>Buffer de memória limpo.</div>'; 
     }
+    
     window.handleEnter = function(e) { 
         if (e.key === 'Enter') window.sendMessage(); 
     }
 </script>
+</body>
+</html>
