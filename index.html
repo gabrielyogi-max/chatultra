@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>NEXUS // INTELLIGENCE</title>
+    <!-- Dependencies -->
     <!-- Dependencies -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark-reasonable.min.css">
@@ -11,525 +12,46 @@
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     
-    <style>
-        /* --- CORE: VARIABLES --- */
-        :root {
-            /* Colors */
-            --bg-deep: #030305;
-            --accent-primary: #6366f1; /* Indigo */
-            --accent-secondary: #a855f7; /* Purple */
-            --accent-tertiary: #ec4899; /* Pink */
-            
-            --glass-panel: rgba(18, 18, 23, 0.65);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-highlight: rgba(255, 255, 255, 0.05);
-            
-            --text-primary: #f1f5f9;
-            --text-secondary: #94a3b8;
-            --text-tertiary: #64748b;
-
-            --success: #10b981;
-            --danger: #f43f5e;
-
-            /* Dimensions */
-            --radius-xl: 24px;
-            --radius-lg: 18px;
-            --radius-md: 12px;
-            --radius-sm: 8px;
-
-            /* Effects */
-            --blur-strength: 40px;
-            --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            --shadow-glow: 0 0 30px rgba(99, 102, 241, 0.15);
-            
-            --font-ui: 'Inter', sans-serif;
-            --font-code: 'JetBrains Mono', monospace;
-        }
-
-        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
-
-        body { 
-            background-color: var(--bg-deep);
-            background-image: 
-                radial-gradient(circle at 0% 0%, rgba(99, 102, 241, 0.15), transparent 40%), 
-                radial-gradient(circle at 100% 100%, rgba(168, 85, 247, 0.15), transparent 40%),
-                radial-gradient(circle at 50% 50%, rgba(255,255,255,0.02), transparent 60%);
-            background-attachment: fixed;
-            color: var(--text-primary); 
-            font-family: var(--font-ui); 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            margin: 0; 
-            overflow: hidden; 
-            font-size: 15px;
-            line-height: 1.6;
-        }
-
-        /* --- ICONS --- */
-        .icon {
-            width: 20px;
-            height: 20px;
-            stroke: currentColor;
-            stroke-width: 1.5;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            fill: none;
-        }
-        .icon-sm { width: 16px; height: 16px; }
-        .icon-xs { width: 14px; height: 14px; }
-
-        /* --- LAYOUT --- */
-        .app-container {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            z-index: 1;
-        }
-
-        @media (min-width: 768px) {
-            .app-container {
-                width: 95%;
-                max-width: 1400px;
-                height: 94vh;
-                background: var(--glass-panel);
-                backdrop-filter: blur(var(--blur-strength));
-                -webkit-backdrop-filter: blur(var(--blur-strength));
-                border: 1px solid var(--glass-border);
-                box-shadow: 
-                    inset 0 0 0 1px rgba(255,255,255,0.03), 
-                    var(--shadow-lg), 
-                    var(--shadow-glow);
-                border-radius: var(--radius-xl);
-                overflow: hidden;
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bgDeep: '#030305',
+                        accentPrimary: '#6366f1', // Indigo
+                        accentSecondary: '#a855f7', // Purple
+                        accentTertiary: '#ec4899', // Pink
+                        glassBorder: 'rgba(255, 255, 255, 0.08)',
+                        glassHighlight: 'rgba(255, 255, 255, 0.05)',
+                        textPrimary: '#f1f5f9',
+                        textSecondary: '#94a3b8',
+                        textTertiary: '#64748b',
+                        success: '#10b981',
+                        danger: '#f43f5e',
+                    },
+                    fontFamily: {
+                        ui: ['Inter', 'sans-serif'],
+                        code: ['JetBrains Mono', 'monospace'],
+                    },
+                    borderRadius: {
+                        'xl': '24px',
+                        'lg': '18px',
+                        'md': '12px',
+                        'sm': '8px',
+                    },
+                    boxShadow: {
+                        'glow': '0 0 30px rgba(99, 102, 241, 0.15)',
+                        'logo': '0 4px 12px rgba(99, 102, 241, 0.3)',
+                    }
+                }
             }
         }
-
-        /* --- HEADER --- */
-        .header {
-            padding: 0 28px;
-            height: 72px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid var(--glass-border);
-            background: rgba(5, 5, 8, 0.3);
-        }
-
-        .brand {
-            font-weight: 600;
-            font-size: 1.15rem;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            letter-spacing: -0.01em;
-        }
-
-        .brand-logo {
-            width: 36px;
-            height: 36px;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-        .brand-logo::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(to bottom right, rgba(255,255,255,0.2), transparent);
-        }
-        .brand-logo svg { stroke: #fff; width: 20px; height: 20px; z-index: 2; }
-
-        .header-controls {
-            display: flex;
-            gap: 16px;
-            align-items: center;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: var(--success);
-            box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
-            display: inline-block;
-            margin-right: 6px;
-        }
-
-        /* --- TOOLBAR --- */
-        .toolbar {
-            padding: 12px 28px;
-            display: flex;
-            gap: 16px;
-            align-items: center;
-            border-bottom: 1px solid var(--glass-border);
-            background: rgba(255, 255, 255, 0.01);
-            overflow-x: auto;
-        }
-
-        .select-wrapper {
-            position: relative;
-            min-width: 280px;
-            flex-grow: 1;
-            max-width: 450px;
-        }
-        
-        .select-wrapper::after {
-            content: '';
-            position: absolute;
-            right: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 10px;
-            height: 6px;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-            background-size: cover;
-            pointer-events: none;
-            opacity: 0.8;
-        }
-
-        select {
-            width: 100%;
-            background: rgba(0, 0, 0, 0.25);
-            border: 1px solid var(--glass-border);
-            color: var(--text-primary);
-            padding: 12px 16px;
-            border-radius: var(--radius-md);
-            font-family: var(--font-ui);
-            font-size: 0.9rem;
-            cursor: pointer;
-            appearance: none; /* Hide default arrow */
-            transition: all 0.2s ease;
-        }
-        select:hover { background: rgba(255, 255, 255, 0.04); border-color: rgba(255,255,255,0.15); }
-        select:focus { border-color: var(--accent-primary); box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15); }
-        
-        /* Dropdown Options */
-        select option {
-            background-color: #0f1014;
-            color: var(--text-primary);
-            padding: 10px;
-        }
-
-        .btn-ghost {
-            background: transparent;
-            border: 1px solid transparent;
-            color: var(--text-secondary);
-            padding: 8px 14px;
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
-        }
-        .btn-ghost:hover { 
-            background: rgba(255, 255, 255, 0.04); 
-            border-color: rgba(255,255,255,0.05);
-            color: var(--text-primary); 
-        }
-
-        /* --- CHAT AREA --- */
-        #chat-history {
-            flex: 1;
-            overflow-y: auto;
-            padding: 40px;
-            display: flex;
-            flex-direction: column;
-            gap: 32px;
-            scroll-behavior: smooth;
-        }
-
-        .message {
-            max-width: 85%;
-            animation: slideUp 0.3s cubic-bezier(0.2, 0.9, 0.3, 1);
-            position: relative;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* User Bubble */
-        .message.user {
-            align-self: flex-end;
-        }
-        .message.user .message-bubble {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(168, 85, 247, 0.15));
-            border: 1px solid rgba(168, 85, 247, 0.25);
-            border-top: 1px solid rgba(255,255,255,0.1);
-            padding: 16px 24px;
-            border-radius: 20px 20px 4px 20px;
-            color: #fff;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            backdrop-filter: blur(5px);
-        }
-        .message.user .label {
-            text-align: right;
-            margin-bottom: 6px;
-            font-size: 0.75rem;
-            color: var(--accent-primary);
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            opacity: 0.8;
-        }
-
-        /* Bot Bubble */
-        .message.bot {
-            align-self: flex-start;
-            width: 100%;
-            padding-right: 10%;
-        }
-        .message.bot .message-bubble {
-            background: transparent;
-            padding: 0 12px;
-            color: var(--text-primary);
-        }
-        .message.bot .label {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 12px;
-            font-size: 0.8rem;
-            color: var(--text-tertiary);
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-        
-        .bot-avatar {
-            width: 28px;
-            height: 28px;
-            border-radius: 8px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--glass-border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--accent-secondary);
-        }
-
-        /* Markdown */
-        .message.bot p { margin-bottom: 16px; line-height: 1.7; color: #e2e8f0; }
-        .message.bot strong { color: #fff; font-weight: 600; }
-        .message.bot ul { margin-left: 20px; margin-bottom: 16px; color: #cbd5e1; }
-        .message.bot li { margin-bottom: 6px; }
-        
-        .message.bot code {
-            background: rgba(99, 102, 241, 0.1);
-            color: #c7d2fe;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: var(--font-code);
-            font-size: 0.9em;
-            border: 1px solid rgba(99, 102, 241, 0.1);
-        }
-
-        /* Typing Indicator */
-        .typing-indicator {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 12px 20px;
-            background: rgba(255,255,255,0.03);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-lg);
-        }
-        .typing-dot {
-            width: 8px;
-            height: 8px;
-            background: var(--text-secondary);
-            border-radius: 50%;
-            animation: bounce 1.4s infinite ease-in-out both;
-        }
-        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
-        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
-        
-        @keyframes bounce {
-            0%, 80%, 100% { transform: translateY(0); opacity: 0.6; }
-            40% { transform: translateY(-6px); opacity: 1; background: var(--accent-primary); }
-        }
-
-        /* Code Blocks */
-        .code-wrapper {
-            background: #090a0d;
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-md);
-            margin: 24px 0;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-        
-        .code-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 16px;
-            background: rgba(255,255,255,0.02);
-            border-bottom: 1px solid var(--glass-border);
-        }
-        
-        .code-lang {
-            font-family: var(--font-ui);
-            font-size: 0.7rem;
-            font-weight: 600;
-            color: var(--text-tertiary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .copy-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-tertiary);
-            cursor: pointer;
-            font-size: 0.7rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: color 0.2s;
-            padding: 4px 8px;
-            border-radius: 4px;
-        }
-        .copy-btn:hover { color: #fff; background: rgba(255,255,255,0.05); }
-
-        pre { margin: 0; padding: 20px; overflow-x: auto; }
-        pre code {
-            background: transparent !important;
-            padding: 0 !important;
-            font-family: var(--font-code);
-            font-size: 0.9rem;
-            line-height: 1.6;
-            white-space: pre; 
-        }
-
-        /* --- INPUT AREA --- */
-        .input-section {
-            padding: 28px;
-            background: linear-gradient(to top, rgba(3,3,5,0.95), rgba(3,3,5,0));
-            position: relative;
-        }
-
-        .input-glass-container {
-            background: rgba(25, 25, 30, 0.6);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: var(--radius-xl);
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.3);
-            transition: all 0.3s ease;
-        }
-
-        .input-glass-container:focus-within {
-            background: rgba(30, 30, 35, 0.8);
-            border-color: rgba(99, 102, 241, 0.4);
-            box-shadow: 0 20px 50px -10px rgba(0,0,0,0.5), 0 0 0 1px rgba(99, 102, 241, 0.1);
-            transform: translateY(-2px);
-        }
-        
-        /* Preview Attachment */
-        .attachment-preview {
-            display: none;
-            padding: 12px;
-            margin: 0 10px;
-            background: rgba(255,255,255,0.03);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-md);
-            align-items: center;
-            justify-content: space-between;
-        }
-        .attachment-preview img { height: 48px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); }
-
-        .input-row {
-            display: flex;
-            align-items: flex-end;
-            gap: 12px;
-            padding: 0 10px 6px 10px;
-        }
-
-        textarea {
-            flex-grow: 1;
-            background: transparent;
-            border: none;
-            color: var(--text-primary);
-            font-family: var(--font-ui);
-            font-size: 0.95rem;
-            resize: none;
-            max-height: 200px;
-            padding: 14px 4px;
-            line-height: 1.5;
-        }
-        textarea::placeholder { color: rgba(148, 163, 184, 0.5); }
-
-        .btn-action {
-            width: 42px;
-            height: 42px;
-            border-radius: 12px;
-            border: none;
-            background: transparent;
-            color: var(--text-secondary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-        }
-        .btn-action:hover { background: rgba(255,255,255,0.08); color: #fff; }
-        .btn-action.active { color: var(--danger); background: rgba(244, 63, 94, 0.1); box-shadow: 0 0 15px rgba(244,63,94,0.2); }
-
-        .btn-send {
-            height: 42px;
-            padding: 0 28px;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            border: none;
-            border-radius: 12px;
-            color: #fff;
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-send:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5); filter: brightness(1.1); }
-        .btn-send:active { transform: translateY(0); }
-        .btn-send:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .app-container { height: 100vh; border-radius: 0; border: none; }
-            .header { padding: 0 20px; height: 64px; }
-            .toolbar { padding: 12px 20px; }
-            .message { max-width: 90%; }
-            .input-section { padding: 16px; }
-            .input-glass-container { border-radius: 20px; }
-        }
-
-    </style>
+    </script>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="bg-bgDeep text-textPrimary font-ui flex justify-center items-center h-full m-0 overflow-hidden text-[15px] leading-relaxed selection:bg-accentPrimary selection:text-white">
 
 <!-- ICONS (Lucide Style) -->
 <svg style="display: none;">
@@ -542,340 +64,111 @@
     <symbol id="icon-mic" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></symbol>
     <symbol id="icon-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
     <symbol id="icon-send" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></symbol>
+    <symbol id="icon-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></symbol>
 </svg>
 
-<div class="app-container">
+<!-- Background Gradients -->
+<div class="fixed inset-0 pointer-events-none z-0">
+    <div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_0%_0%,rgba(99,102,241,0.15),transparent_40%)]"></div>
+    <div class="absolute bottom-0 right-0 w-full h-full bg-[radial-gradient(circle_at_100%_100%,rgba(168,85,247,0.15),transparent_40%)]"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.02),transparent_60%)]"></div>
+</div>
+
+<!-- Main Container -->
+<div class="relative z-10 w-full h-full md:w-[95%] md:max-w-[1400px] md:h-[94vh] md:rounded-xl md:border md:border-glassBorder md:shadow-lg flex flex-col overflow-hidden glass-panel bg-opacity-30">
     
     <!-- HEADER -->
-    <header class="header">
-        <div class="brand">
-            <div class="brand-logo">
-                <svg class="icon"><use href="#icon-cpu"/></svg>
+    <header class="px-7 h-[72px] flex items-center justify-between border-b border-glassBorder bg-[rgba(5,5,8,0.3)] shrink-0">
+        <div class="font-semibold text-[1.15rem] text-textPrimary flex items-center gap-3.5 tracking-tight">
+            <div class="w-9 h-9 bg-gradient-to-br from-accentPrimary to-accentSecondary rounded-[10px] flex items-center justify-center shadow-logo relative overflow-hidden group">
+                <div class="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent pointer-events-none"></div>
+                <svg class="w-5 h-5 stroke-white z-10"><use href="#icon-cpu"/></svg>
             </div>
-            <span>NEXUS <span style="opacity:0.5; font-weight:400;">// INTELLIGENCE</span></span>
+            <span>NEXUS <span class="opacity-50 font-normal">// INTELLIGENCE</span></span>
         </div>
         
-        <div class="header-controls">
-            <div style="font-size: 0.7rem; color: var(--text-tertiary); display: flex; gap: 15px; font-family: var(--font-code);">
-                <span id="status-visual"><span class="status-dot"></span>SYSTEM ONLINE</span>
+        <div class="flex gap-4 items-center">
+            <div class="text-[0.7rem] text-textTertiary flex gap-4 font-code items-center">
+                <span id="status-visual" class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-success shadow-[0_0_8px_rgba(16,185,129,0.4)]"></span> SYSTEM ONLINE</span>
             </div>
         </div>
     </header>
 
     <!-- TOOLBAR -->
-    <div class="toolbar">
-        <div class="select-wrapper">
-            <select id="modelSelector">
-                <optgroup label="VISUAL CORE">
-                    <option value="Cluster1|✨ Google: Gemini 2.5 Flash Lite ⚡">Gemini 2.5 Flash Lite</option>
-                    <option value="Cluster1|✨ Google: Gemini 3.0 Pro (Experimental)">Gemini 3.0 Pro Preview</option>
-                    <option value="Cluster1|✨ Google: Gemini 2.5 Pro">Gemini 2.5 Pro</option>
+    <div class="px-7 py-3 flex gap-4 items-center border-b border-glassBorder bg-white/1 overflow-x-auto shrink-0 no-scrollbar">
+        <div class="relative min-w-[280px] grow max-w-[450px]">
+            <select id="modelSelector" class="w-full bg-black/25 border border-glassBorder text-textPrimary py-3 pl-4 pr-10 rounded-md font-ui text-[0.9rem] cursor-pointer appearance-none transition-all duration-200 hover:bg-white/5 hover:border-white/15 focus:border-accentPrimary focus:ring-1 focus:ring-accentPrimary outline-none">
+                <optgroup label="VISUAL CORE" class="bg-[#0f1014] text-textPrimary">
+                    <option value="Cluster1|✨ Google: Gemini 2.5 Flash Lite ⚡" class="bg-[#0f1014] p-2">Gemini 2.5 Flash Lite</option>
+                    <option value="Cluster1|✨ Google: Gemini 3.0 Pro (Experimental)" class="bg-[#0f1014] p-2">Gemini 3.0 Pro Preview</option>
+                    <option value="Cluster1|✨ Google: Gemini 2.5 Pro" class="bg-[#0f1014] p-2">Gemini 2.5 Pro</option>
                 </optgroup>
-                <optgroup label="MISTRAL AI">
-                    <option value="Cluster1|🇫🇷 Mistral: Magistral Medium 2509">Mistral Medium</option>
-                    <option value="Cluster1|🇫🇷 Mistral: Pixtral Large (Vision) 🖼️">Pixtral Large (Vision)</option>
-                    <option value="Cluster1|🇫🇷 Mistral: Codestral 2508">Mistral Codestral</option>
+                <optgroup label="MISTRAL AI" class="bg-[#0f1014] text-textPrimary">
+                    <option value="Cluster1|🇫🇷 Mistral: Magistral Medium 2509" class="bg-[#0f1014] p-2">Mistral Medium</option>
+                    <option value="Cluster1|🇫🇷 Mistral: Pixtral Large (Vision) 🖼️" class="bg-[#0f1014] p-2">Pixtral Large (Vision)</option>
+                    <option value="Cluster1|🇫🇷 Mistral: Codestral 2508" class="bg-[#0f1014] p-2">Mistral Codestral</option>
                 </optgroup>
-                <optgroup label="LOGIC CORE">
-                     <option value="Cluster2|🚀 DeepSeek R1 Distill Qwen 7B (O Mais Inteligente - Novo!)">DeepSeek R1 (Reasoning)</option>
-                     <option value="Cluster2|🐳 DeepSeek Math 7B (Especialista Antigo)">DeepSeek Math</option>
+                <optgroup label="LOGIC CORE" class="bg-[#0f1014] text-textPrimary">
+                     <option value="Cluster2|🚀 DeepSeek R1 Distill Qwen 7B (O Mais Inteligente - Novo!)" class="bg-[#0f1014] p-2">DeepSeek R1 (Reasoning)</option>
+                     <option value="Cluster2|🐳 DeepSeek Math 7B (Especialista Antigo)" class="bg-[#0f1014] p-2">DeepSeek Math</option>
                 </optgroup>
             </select>
+            <!-- Custom chevron -->
+            <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-80">
+                <svg width="10" height="6" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
         </div>
         
-        <button class="btn-ghost" onclick="toggleSound()" id="soundBtn" title="Sound Effects">
-            <svg class="icon-sm"><use href="#icon-volume-2" id="sndIconUse"/></svg>
+        <button onclick="toggleSound()" id="soundBtn" class="bg-transparent border border-transparent text-textSecondary px-3.5 py-2 rounded-md cursor-pointer text-[0.85rem] font-medium flex items-center gap-2 transition-all duration-200 hover:bg-white/5 hover:border-white/5 hover:text-textPrimary" title="Sound Effects">
+            <svg class="w-4 h-4 stroke-current stroke-[1.5] fill-none"><use href="#icon-volume-2" id="sndIconUse"/></svg>
         </button>
-        <button class="btn-ghost" onclick="exportChat()" title="Export Chat">
-            <svg class="icon-sm"><use href="#icon-download"/></svg> Export
+        <button onclick="exportChat()" class="bg-transparent border border-transparent text-textSecondary px-3.5 py-2 rounded-md cursor-pointer text-[0.85rem] font-medium flex items-center gap-2 transition-all duration-200 hover:bg-white/5 hover:border-white/5 hover:text-textPrimary" title="Export Chat">
+            <svg class="w-4 h-4 stroke-current stroke-[1.5] fill-none"><use href="#icon-download"/></svg> Export
         </button>
-        <button class="btn-ghost" onclick="clearChat()" style="color: var(--danger);" title="Clear Chat">
-            <svg class="icon-sm"><use href="#icon-trash"/></svg> Clear
+        <button onclick="clearChat()" class="bg-transparent border border-transparent text-danger px-3.5 py-2 rounded-md cursor-pointer text-[0.85rem] font-medium flex items-center gap-2 transition-all duration-200 hover:bg-danger/10 hover:border-danger/10" title="Clear Chat">
+            <svg class="w-4 h-4 stroke-current stroke-[1.5] fill-none"><use href="#icon-trash"/></svg> Clear
         </button>
     </div>
 
     <!-- CHAT AREA -->
-    <div id="chat-history">
+    <div id="chat-history" class="flex-1 overflow-y-auto p-10 flex flex-col gap-8 scroll-smooth">
         <!-- JS will populate -->
     </div>
 
     <!-- INPUT -->
-    <div class="input-section">
-        <div class="input-glass-container">
+    <div class="p-7 bg-gradient-to-t from-[rgba(3,3,5,0.95)] to-[rgba(3,3,5,0)] relative shrink-0">
+        <div class="bg-[rgba(25,25,30,0.6)] backdrop-blur-md border border-white/5 rounded-xl p-2.5 flex flex-col gap-3 shadow-lg transition-all duration-300 focus-within:bg-[rgba(30,30,35,0.8)] focus-within:border-accentPrimary/40 focus-within:shadow-[0_20px_50px_-10px_rgba(0,0,0,0.5),0_0_0_1px_rgba(99,102,241,0.1)] focus-within:-translate-y-0.5">
             
-            <div id="imagePreviewContainer" class="attachment-preview">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <img id="imagePreview" alt="Preview">
-                    <span id="imageName" style="font-size: 0.8rem; color: var(--text-secondary);">image.png</span>
+            <div id="imagePreviewContainer" class="hidden p-3 mx-2.5 bg-white/5 border border-glassBorder rounded-md items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <img id="imagePreview" alt="Preview" class="h-12 rounded-md border border-white/10">
+                    <span id="imageName" class="text-[0.8rem] text-textSecondary">image.png</span>
                 </div>
-                <button onclick="clearImage()" style="background:none; border:none; color: var(--text-tertiary); cursor:pointer;">&times;</button>
+                <button onclick="clearImage()" class="bg-transparent border-none text-textTertiary cursor-pointer hover:text-textPrimary text-xl leading-none">&times;</button>
             </div>
 
-            <div class="input-row">
-                <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
+            <div class="flex items-end gap-3 px-2.5 pb-1.5">
+                <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="handleFileSelect(event)">
                 
-                <button class="btn-action" onclick="document.getElementById('fileInput').click()" title="Attach File">
-                    <svg class="icon"><use href="#icon-paperclip"/></svg>
+                <button class="w-[42px] h-[42px] rounded-xl border-none bg-transparent text-textSecondary cursor-pointer flex items-center justify-center transition-all duration-200 hover:bg-white/10 hover:text-white" onclick="document.getElementById('fileInput').click()" title="Attach File">
+                    <svg class="w-5 h-5 stroke-current stroke-[1.5] fill-none"><use href="#icon-paperclip"/></svg>
                 </button>
                 
-                <textarea id="userInput" placeholder="Ask Nexus..." onkeypress="handleEnter(event)" rows="1"></textarea>
+                <textarea id="userInput" placeholder="Ask Nexus..." onkeypress="handleEnter(event)" rows="1" class="grow bg-transparent border-none text-textPrimary font-ui text-[0.95rem] resize-none max-h-[200px] py-3.5 px-1 leading-normal placeholder-slate-400/50 outline-none"></textarea>
                 
-                <button class="btn-action" id="micBtn" onclick="toggleVoice()" title="Voice Input">
-                    <svg class="icon"><use href="#icon-mic"/></svg>
+                <button id="micBtn" onclick="toggleVoice()" class="w-[42px] h-[42px] rounded-xl border-none bg-transparent text-textSecondary cursor-pointer flex items-center justify-center transition-all duration-200 hover:bg-white/10 hover:text-white [&.active]:text-danger [&.active]:bg-danger/10 [&.active]:shadow-[0_0_15px_rgba(244,63,94,0.2)]" title="Voice Input">
+                    <svg class="w-5 h-5 stroke-current stroke-[1.5] fill-none"><use href="#icon-mic"/></svg>
                 </button>
 
-                <button id="sendBtn" class="btn-send" onclick="sendMessage()">
-                    <span>SEND</span> <svg class="icon-xs"><use href="#icon-send"/></svg>
+                <button id="sendBtn" class="h-[42px] px-7 bg-gradient-to-br from-accentPrimary to-accentSecondary border-none rounded-xl text-white font-semibold text-[0.9rem] cursor-pointer transition-all duration-300 shadow-[0_4px_15px_rgba(99,102,241,0.3)] flex items-center gap-2 hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(99,102,241,0.5)] hover:brightness-110 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none" onclick="sendMessage()">
+                    <span>SEND</span> <svg class="w-3.5 h-3.5 stroke-current stroke-[1.5] fill-none"><use href="#icon-send"/></svg>
                 </button>
             </div>
         </div>
     </div>
 </div>
 
-<script type="module">
-    import { Client } from "https://cdn.jsdelivr.net/npm/@gradio/client/+esm";
+<script type="module" src="script.js"></script>
 
-    const HF_TOKEN = ""; 
-    const CLUSTERS = { "Cluster1": "Madras1/APIDOST", "Cluster2": "Madras1/APISMALL" };
-    let clients = {};
-    let selectedFile = null; 
-    let soundEnabled = true;
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-    // --- SOUNDS ---
-    function playSound(type) {
-        if (!soundEnabled) return;
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        const now = audioCtx.currentTime;
-
-        if (type === 'message') {
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(400, now);
-            osc.frequency.exponentialRampToValueAtTime(800, now + 0.1);
-            gain.gain.setValueAtTime(0.02, now);
-            gain.gain.linearRampToValueAtTime(0, now + 0.5);
-            osc.start(now);
-            osc.stop(now + 0.5);
-        } else if (type === 'error') {
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(150, now);
-            gain.gain.setValueAtTime(0.05, now);
-            gain.gain.linearRampToValueAtTime(0, now + 0.3);
-            osc.start(now);
-            osc.stop(now + 0.3);
-        }
-    }
-
-    // --- GLOBAL BINDINGS ---
-    window.toggleSound = function() {
-        soundEnabled = !soundEnabled;
-        const icon = document.getElementById('sndIconUse');
-        icon.setAttribute('href', soundEnabled ? '#icon-volume-2' : '#icon-volume-x');
-        document.getElementById('soundBtn').style.opacity = soundEnabled ? '1' : '0.5';
-    }
-
-    window.exportChat = function() {
-        let text = "";
-        document.querySelectorAll('.message').forEach(msg => {
-            const role = msg.classList.contains('user') ? "USER" : "NEXUS";
-            // Simple extraction, improvements could be made for cleaner text
-            text += `[${role}]: ${msg.innerText.replace('COPY', '')}\n\n`;
-        });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(new Blob([text], {type: 'text/plain'}));
-        a.download = `nexus_export.txt`;
-        a.click();
-    }
-
-    window.clearChat = function() {
-        document.getElementById('chat-history').innerHTML = '';
-        appendMessage('bot', 'System Ready.');
-    }
-
-    window.handleFileSelect = function(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-        selectedFile = file;
-        document.getElementById('imagePreview').src = URL.createObjectURL(file);
-        document.getElementById('imageName').innerText = file.name;
-        document.getElementById('imagePreviewContainer').style.display = 'flex';
-        // Auto-focus input
-        userInput.focus();
-    }
-
-    window.clearImage = function() {
-        selectedFile = null;
-        document.getElementById('fileInput').value = "";
-        document.getElementById('imagePreviewContainer').style.display = 'none';
-    }
-
-    window.toggleVoice = function() {
-        if (!('webkitSpeechRecognition' in window)) return alert("Voice input not supported in this browser.");
-        const btn = document.getElementById('micBtn');
-        if (window.recognition_active) {
-            window.recognition.stop();
-            return;
-        }
-        const r = new webkitSpeechRecognition();
-        r.lang = 'pt-BR';
-        r.onstart = () => { window.recognition_active = true; btn.classList.add('active'); };
-        r.onend = () => { window.recognition_active = false; btn.classList.remove('active'); };
-        r.onresult = (e) => {
-            document.getElementById('userInput').value += " " + e.results[0][0].transcript;
-            adjustTextarea();
-        };
-        r.start();
-        window.recognition = r;
-    }
-
-    window.copyCode = function(btn) {
-        const code = btn.closest('.code-wrapper').querySelector('code').innerText;
-        navigator.clipboard.writeText(code);
-        const original = btn.innerHTML;
-        btn.innerHTML = `<svg class="icon-sm"><use href="#icon-check"/></svg> COPIED`;
-        setTimeout(() => btn.innerHTML = original, 2000);
-    }
-
-    window.handleEnter = function(e) {
-        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
-    }
-
-    // --- MAIN LOGIC ---
-    const userInput = document.getElementById('userInput');
-    const historyDiv = document.getElementById('chat-history');
-
-    function adjustTextarea() {
-        userInput.style.height = 'auto';
-        userInput.style.height = Math.min(userInput.scrollHeight, 200) + 'px';
-    }
-    userInput.addEventListener('input', adjustTextarea);
-
-    // Init
-    async function init() {
-        // Initial bot message without animation to prevent jump
-        const welcomeMsgId = appendMessage('bot', 'Initializing Neural Clusters...', false);
-        try {
-            clients['Cluster1'] = await Client.connect(CLUSTERS['Cluster1'], HF_TOKEN ? {hf_token: HF_TOKEN}:{});
-            clients['Cluster2'] = await Client.connect(CLUSTERS['Cluster2'], HF_TOKEN ? {hf_token: HF_TOKEN}:{});
-            
-            // Remove initializing message
-            const msgEl = document.getElementById(welcomeMsgId);
-            if(msgEl) msgEl.remove();
-
-            appendMessage('bot', 'Welcome back, Commander. All systems operational.');
-        } catch(e) {
-            appendMessage('bot', `Initialization Failed: ${e.message}`);
-        }
-    }
-    init();
-
-    window.sendMessage = async function() {
-        const text = userInput.value.trim();
-        if (!text && !selectedFile) return;
-        
-        const [cluster, model] = document.getElementById('modelSelector').value.split('|');
-        if (!clients[cluster]) return appendMessage('bot', 'Error: Selected Cluster Offline.');
-
-        // UI Update
-        userInput.value = '';
-        userInput.style.height = 'auto';
-        let displayHtml = text.replace(/\n/g, '<br>');
-        if (selectedFile) displayHtml += `<br><small>[Attached: ${selectedFile.name}]</small>`;
-        
-        appendMessage('user', displayHtml, true);
-        playSound('message');
-
-        // Typing Indicator
-        const loadingId = `loading-${Date.now()}`;
-        const loadingDiv = document.createElement('div');
-        loadingDiv.className = 'message bot';
-        loadingDiv.id = loadingId;
-        loadingDiv.innerHTML = `
-            <div class="label"><div class="bot-avatar"><svg class="icon-sm"><use href="#icon-cpu"/></svg></div> NEXUS</div>
-            <div class="typing-indicator">
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
-            </div>
-        `;
-        historyDiv.appendChild(loadingDiv);
-        historyDiv.scrollTop = historyDiv.scrollHeight;
-        
-        // API Call
-        try {
-            const result = await clients[cluster].predict("/chat", [
-                { text: text, files: selectedFile ? [selectedFile] : [] },
-                [],
-                model
-            ]);
-            
-            // Remove loading message
-            document.getElementById(loadingId).remove();
-            
-            const response = result.data ? String(result.data[0]) : "No Response.";
-            appendMessage('bot', response);
-            playSound('message');
-        } catch (e) {
-            document.getElementById(loadingId).remove();
-            appendMessage('bot', `**Error:** ${e.message}`);
-            playSound('error');
-        } finally {
-            clearImage();
-        }
-    }
-
-    // --- RENDERER ---
-    marked.setOptions({
-        highlight: (code, lang) => {
-            const l = hljs.getLanguage(lang) ? lang : 'plaintext';
-            return hljs.highlight(code, {language: l}).value;
-        }
-    });
-
-    const renderer = new marked.Renderer();
-    renderer.code = (code, lang) => {
-        const l = (lang || 'text').split(' ')[0];
-        const valid = hljs.getLanguage(l) ? l : 'text';
-        const highlighted = hljs.highlight(code, {language: valid}).value;
-        return `
-            <div class="code-wrapper">
-                <div class="code-header">
-                    <span class="code-lang">${valid}</span>
-                    <button class="copy-btn" onclick="copyCode(this)">
-                        <svg class="icon-sm"><use href="#icon-copy"/></svg> COPY
-                    </button>
-                </div>
-                <pre><code class="hljs language-${valid}">${highlighted}</code></pre>
-            </div>
-        `;
-    };
-    marked.use({renderer});
-
-    function appendMessage(role, text, isHtml=false) {
-        const div = document.createElement('div');
-        div.className = `message ${role}`;
-        div.id = `msg-${Date.now()}`;
-        
-        const label = role === 'user' ? 'YOU' : '<div class="bot-avatar"><svg class="icon-sm"><use href="#icon-cpu"/></svg></div> NEXUS';
-        
-        let content = text;
-        if (role === 'bot' && !isHtml) {
-            content = marked.parse(text);
-        }
-
-        div.innerHTML = `
-            <div class="label">${label}</div>
-            <div class="message-bubble">${isHtml ? content : content}</div>
-        `;
-        
-        historyDiv.appendChild(div);
-        historyDiv.scrollTop = historyDiv.scrollHeight;
-        return div.id;
-    }
-</script>
 </body>
 </html>

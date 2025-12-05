@@ -1,0 +1,243 @@
+import { Client } from "https://cdn.jsdelivr.net/npm/@gradio/client/+esm";
+
+const HF_TOKEN = ""; 
+const CLUSTERS = { "Cluster1": "Madras1/APIDOST", "Cluster2": "Madras1/APISMALL" };
+let clients = {};
+let selectedFile = null; 
+let soundEnabled = true;
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+// --- SOUNDS ---
+function playSound(type) {
+    if (!soundEnabled) return;
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    const now = audioCtx.currentTime;
+
+    if (type === 'message') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(400, now);
+        osc.frequency.exponentialRampToValueAtTime(800, now + 0.1);
+        gain.gain.setValueAtTime(0.02, now);
+        gain.gain.linearRampToValueAtTime(0, now + 0.5);
+        osc.start(now);
+        osc.stop(now + 0.5);
+    } else if (type === 'error') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(150, now);
+        gain.gain.setValueAtTime(0.05, now);
+        gain.gain.linearRampToValueAtTime(0, now + 0.3);
+        osc.start(now);
+        osc.stop(now + 0.3);
+    }
+}
+
+// --- GLOBAL BINDINGS ---
+window.toggleSound = function() {
+    soundEnabled = !soundEnabled;
+    const icon = document.getElementById('sndIconUse');
+    icon.setAttribute('href', soundEnabled ? '#icon-volume-2' : '#icon-volume-x');
+    document.getElementById('soundBtn').style.opacity = soundEnabled ? '1' : '0.5';
+}
+
+window.exportChat = function() {
+    let text = "";
+    document.querySelectorAll('.message').forEach(msg => {
+        const role = msg.classList.contains('user') ? "USER" : "NEXUS";
+        // Simple extraction, improvements could be made for cleaner text
+        text += `[${role}]: ${msg.innerText.replace('COPY', '')}\n\n`;
+    });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([text], {type: 'text/plain'}));
+    a.download = `nexus_export.txt`;
+    a.click();
+}
+
+window.clearChat = function() {
+    document.getElementById('chat-history').innerHTML = '';
+    appendMessage('bot', 'System Ready.');
+}
+
+window.handleFileSelect = function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    selectedFile = file;
+    document.getElementById('imagePreview').src = URL.createObjectURL(file);
+    document.getElementById('imageName').innerText = file.name;
+    document.getElementById('imagePreviewContainer').style.display = 'flex';
+    // Auto-focus input
+    userInput.focus();
+}
+
+window.clearImage = function() {
+    selectedFile = null;
+    document.getElementById('fileInput').value = "";
+    document.getElementById('imagePreviewContainer').style.display = 'none';
+}
+
+window.toggleVoice = function() {
+    if (!('webkitSpeechRecognition' in window)) return alert("Voice input not supported in this browser.");
+    const btn = document.getElementById('micBtn');
+    if (window.recognition_active) {
+        window.recognition.stop();
+        return;
+    }
+    const r = new webkitSpeechRecognition();
+    r.lang = 'pt-BR';
+    r.onstart = () => { window.recognition_active = true; btn.classList.add('active'); };
+    r.onend = () => { window.recognition_active = false; btn.classList.remove('active'); };
+    r.onresult = (e) => {
+        document.getElementById('userInput').value += " " + e.results[0][0].transcript;
+        adjustTextarea();
+    };
+    r.start();
+    window.recognition = r;
+}
+
+window.copyCode = function(btn) {
+    const code = btn.closest('.code-wrapper').querySelector('code').innerText;
+    navigator.clipboard.writeText(code);
+    const original = btn.innerHTML;
+    btn.innerHTML = `<svg class="icon-sm"><use href="#icon-check"/></svg> COPIED`;
+    setTimeout(() => btn.innerHTML = original, 2000);
+}
+
+window.handleEnter = function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+
+// --- MAIN LOGIC ---
+const userInput = document.getElementById('userInput');
+const historyDiv = document.getElementById('chat-history');
+
+function adjustTextarea() {
+    userInput.style.height = 'auto';
+    userInput.style.height = Math.min(userInput.scrollHeight, 200) + 'px';
+}
+userInput.addEventListener('input', adjustTextarea);
+
+// Init
+async function init() {
+    // Initial bot message without animation to prevent jump
+    const welcomeMsgId = appendMessage('bot', 'Initializing Neural Clusters...', false);
+    try {
+        clients['Cluster1'] = await Client.connect(CLUSTERS['Cluster1'], HF_TOKEN ? {hf_token: HF_TOKEN}:{});
+        clients['Cluster2'] = await Client.connect(CLUSTERS['Cluster2'], HF_TOKEN ? {hf_token: HF_TOKEN}:{});
+        
+        // Remove initializing message
+        const msgEl = document.getElementById(welcomeMsgId);
+        if(msgEl) msgEl.remove();
+
+        appendMessage('bot', 'Welcome back, Commander. All systems operational.');
+    } catch(e) {
+        appendMessage('bot', `Initialization Failed: ${e.message}`);
+    }
+}
+init();
+
+window.sendMessage = async function() {
+    const text = userInput.value.trim();
+    if (!text && !selectedFile) return;
+    
+    const [cluster, model] = document.getElementById('modelSelector').value.split('|');
+    if (!clients[cluster]) return appendMessage('bot', 'Error: Selected Cluster Offline.');
+
+    // UI Update
+    userInput.value = '';
+    userInput.style.height = 'auto';
+    let displayHtml = text.replace(/\n/g, '<br>');
+    if (selectedFile) displayHtml += `<br><small>[Attached: ${selectedFile.name}]</small>`;
+    
+    appendMessage('user', displayHtml, true);
+    playSound('message');
+
+    // Typing Indicator
+    const loadingId = `loading-${Date.now()}`;
+    const loadingDiv = document.createElement('div');
+    loadingDiv.className = 'message bot';
+    loadingDiv.id = loadingId;
+    loadingDiv.innerHTML = `
+        <div class="label"><div class="bot-avatar"><svg class="icon-sm"><use href="#icon-cpu"/></svg></div> NEXUS</div>
+        <div class="typing-indicator">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+        </div>
+    `;
+    historyDiv.appendChild(loadingDiv);
+    historyDiv.scrollTop = historyDiv.scrollHeight;
+    
+    // API Call
+    try {
+        const result = await clients[cluster].predict("/chat", [
+            { text: text, files: selectedFile ? [selectedFile] : [] },
+            [],
+            model
+        ]);
+        
+        // Remove loading message
+        document.getElementById(loadingId).remove();
+        
+        const response = result.data ? String(result.data[0]) : "No Response.";
+        appendMessage('bot', response);
+        playSound('message');
+    } catch (e) {
+        document.getElementById(loadingId).remove();
+        appendMessage('bot', `**Error:** ${e.message}`);
+        playSound('error');
+    } finally {
+        clearImage();
+    }
+}
+
+// --- RENDERER ---
+marked.setOptions({
+    highlight: (code, lang) => {
+        const l = hljs.getLanguage(lang) ? lang : 'plaintext';
+        return hljs.highlight(code, {language: l}).value;
+    }
+});
+
+const renderer = new marked.Renderer();
+renderer.code = (code, lang) => {
+    const l = (lang || 'text').split(' ')[0];
+    const valid = hljs.getLanguage(l) ? l : 'text';
+    const highlighted = hljs.highlight(code, {language: valid}).value;
+    return `
+        <div class="code-wrapper">
+            <div class="code-header">
+                <span class="code-lang">${valid}</span>
+                <button class="copy-btn" onclick="copyCode(this)">
+                    <svg class="icon-sm"><use href="#icon-copy"/></svg> COPY
+                </button>
+            </div>
+            <pre><code class="hljs language-${valid}">${highlighted}</code></pre>
+        </div>
+    `;
+};
+marked.use({renderer});
+
+function appendMessage(role, text, isHtml=false) {
+    const div = document.createElement('div');
+    div.className = `message ${role}`;
+    div.id = `msg-${Date.now()}`;
+    
+    const label = role === 'user' ? 'YOU' : '<div class="bot-avatar"><svg class="icon-sm"><use href="#icon-cpu"/></svg></div> NEXUS';
+    
+    let content = text;
+    if (role === 'bot' && !isHtml) {
+        content = marked.parse(text);
+    }
+
+    div.innerHTML = `
+        <div class="label">${label}</div>
+        <div class="message-bubble">${isHtml ? content : content}</div>
+    `;
+    
+    historyDiv.appendChild(div);
+    historyDiv.scrollTop = historyDiv.scrollHeight;
+    return div.id;
+}
