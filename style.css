@@ -2,17 +2,19 @@
 
 /* --- Reset & Base --- */
 :root {
-    --bg-deep: #09090b; /* Zinc 950 */
-    --bg-panel: #18181b; /* Zinc 900 */
+    --bg-deep: #050507; /* Darker Black/Blue */
+    --bg-panel: #0f1014;
     --border-subtle: rgba(255, 255, 255, 0.08);
     --accent: #6366f1;
-    --text-main: #e4e4e7; /* Zinc 200 */
-    --text-muted: #a1a1aa; /* Zinc 400 */
+    --text-main: #e4e4e7;
+    --text-muted: #a1a1aa;
 }
 
 body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background-color: var(--bg-deep);
+    color: var(--text-main);
 }
 
 /* Custom Scrollbar */
@@ -31,14 +33,80 @@ body {
     background: rgba(255, 255, 255, 0.2);
 }
 
-/* --- Chat Layout (Standard Professional) --- */
+/* --- Visual Effects (New) --- */
+
+/* Cyberpunk Grid Background */
+.cyber-grid {
+    position: fixed;
+    inset: 0;
+    background-image: 
+        linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: gridScroll 20s linear infinite;
+    z-index: 0;
+    pointer-events: none;
+    /* Vignette Effect */
+    mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+    -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+}
+
+@keyframes gridScroll {
+    0% { background-position: 0 0; }
+    100% { background-position: 50px 50px; }
+}
+
+/* Glassmorphism (Strong) */
+.glass-effect {
+    background: rgba(10, 10, 15, 0.4);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.glass-panel-deep {
+    /* Keeping existing base but enhancing */
+    background: rgba(5, 5, 8, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Glowing Button */
+.glow-button {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.glow-button:hover {
+    box-shadow: 0 0 25px rgba(99, 102, 241, 0.5), 0 0 10px rgba(168, 85, 247, 0.3);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+/* --- Chat Layout --- */
 
 .message {
     width: 100%;
     margin-bottom: 24px;
     display: flex;
-    gap: 28px; /* Increased gap from 20px to 28px */
-    animation: fadeIn 0.3s ease-out;
+    gap: 28px;
+    /* Smooth Slide In Animation */
+    animation: slideInSmooth 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    opacity: 0; /* Start hidden for animation */
+}
+
+@keyframes slideInSmooth {
+    0% { 
+        opacity: 0; 
+        transform: translateY(20px) scale(0.98); 
+    }
+    100% { 
+        opacity: 1; 
+        transform: translateY(0) scale(1); 
+    }
 }
 
 .message.user {
@@ -100,14 +168,15 @@ body {
     color: #fff;
     border-top-right-radius: 2px;
     box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    font-family: 'Inter', sans-serif;
 }
 
-/* Bot Bubble - Added subtle background for better readability/highlight */
+/* Bot Bubble */
 .message.bot .message-bubble {
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid rgba(255, 255, 255, 0.03);
     color: var(--text-main);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05); /* Subtle lift */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 }
 
 /* Icons within JS */
@@ -119,7 +188,7 @@ body {
     fill: none;
 }
 
-/* --- Markdown Styling (Tighter, Cleaner) --- */
+/* --- Markdown Styling --- */
 .message.bot p { margin-bottom: 0.8em; }
 .message.bot p:last-child { margin-bottom: 0; }
 
@@ -128,7 +197,7 @@ body {
     font-weight: 600; 
 }
 
-/* Lists */
+/* Technical Typography applied to lists/code */
 .message.bot ul, .message.bot ol { 
     margin-left: 0; 
     padding-left: 1.2em; 
@@ -140,6 +209,7 @@ body {
 }
 .message.bot li::marker {
     color: #6366f1;
+    font-family: 'JetBrains Mono', monospace;
 }
 
 /* Inline Code */
@@ -152,7 +222,7 @@ body {
     font-size: 0.85em;
 }
 
-/* Code Blocks (Marked.js) */
+/* Code Blocks */
 .code-wrapper {
     background: #0d0e11; 
     border: 1px solid var(--border-subtle);
@@ -171,11 +241,12 @@ body {
 }
 
 .code-lang {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.7rem;
+    font-family: 'JetBrains Mono', monospace; /* Tech font */
+    font-size: 0.75rem;
     font-weight: 600;
     color: #94a3b8;
     text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .copy-btn {
@@ -188,6 +259,7 @@ body {
     align-items: center;
     gap: 6px;
     transition: color 0.2s;
+    font-family: 'JetBrains Mono', monospace; /* Tech font */
 }
 .copy-btn:hover { color: #fff; }
 
@@ -229,11 +301,6 @@ pre code {
     40% { transform: scale(1); background: #6366f1; }
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(5px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
 /* Custom Dropdown Styling */
 .dropdown-trigger {
     cursor: pointer;
@@ -254,9 +321,10 @@ pre code {
     pointer-events: auto;
 }
 
-/* Input Area Overrides */
+/* Input Area Overrides - Enhanced Glass */
 .input-glass {
-    background: rgba(20, 20, 25, 0.85);
-    backdrop-filter: blur(16px);
+    background: rgba(20, 20, 25, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-top: 1px solid var(--border-subtle);
 }
