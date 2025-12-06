@@ -146,12 +146,18 @@
                     <div onclick="selectModel('Cluster1|🇫🇷 Mistral: Pixtral Large (Vision) 🖼️', 'Pixtral Large (Vision)')" class="px-4 py-2.5 text-sm text-gray-300 hover:bg-white/5 hover:text-white cursor-pointer transition-colors flex items-center gap-2">
                         <span class="w-1 h-1 rounded-full bg-orange-400"></span> Pixtral Large (Vision)
                     </div>
+                    <div onclick="selectModel('Cluster1|🇫🇷 Mistral: Codestral 2508', 'Mistral Codestral')" class="px-4 py-2.5 text-sm text-gray-300 hover:bg-white/5 hover:text-white cursor-pointer transition-colors flex items-center gap-2">
+                        <span class="w-1 h-1 rounded-full bg-amber-500"></span> Mistral Codestral
+                    </div>
 
                     <div class="border-t border-white/5 my-1"></div>
                     <div class="px-3 py-2 text-[0.7rem] font-bold text-gray-500 uppercase tracking-wider">Logic Core</div>
 
                     <div onclick="selectModel('Cluster2|🚀 DeepSeek R1 Distill Qwen 7B (O Mais Inteligente - Novo!)', 'DeepSeek R1 (Reasoning)')" class="px-4 py-2.5 text-sm text-gray-300 hover:bg-white/5 hover:text-white cursor-pointer transition-colors flex items-center gap-2">
                         <span class="w-1 h-1 rounded-full bg-purple-500"></span> DeepSeek R1 (Reasoning)
+                    </div>
+                    <div onclick="selectModel('Cluster2|🐳 DeepSeek Math 7B (Especialista Antigo)', 'DeepSeek Math')" class="px-4 py-2.5 text-sm text-gray-300 hover:bg-white/5 hover:text-white cursor-pointer transition-colors flex items-center gap-2">
+                        <span class="w-1 h-1 rounded-full bg-indigo-400"></span> DeepSeek Math
                     </div>
                 </div>
             </div>
@@ -173,7 +179,7 @@
     </div>
 
     <!-- CHAT AREA -->
-    <div id="chat-history" class="flex-1 overflow-y-auto px-4 py-8 md:px-0 flex flex-col scroll-smooth">
+    <div id="chat-history" class="flex-1 overflow-y-auto px-6 py-8 flex flex-col scroll-smooth">
         <div class="w-full max-w-4xl mx-auto flex flex-col gap-8 pb-4">
             <!-- Messages injected here -->
         </div>

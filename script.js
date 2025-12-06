@@ -279,5 +279,3 @@ function appendMessage(role, text, isHtml=false) {
     return div.id;
 }
 
-// Expose for debugging/verification
-window.appendMessage = appendMessage;
