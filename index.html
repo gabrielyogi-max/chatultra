@@ -46,7 +46,7 @@
 </head>
 <body class="bg-bgDeep text-textPrimary font-ui flex justify-center items-center h-full m-0 overflow-hidden text-[15px] antialiased selection:bg-accentPrimary selection:text-white">
 
-<!-- SVG Icons (Lucide Style) -->
+<!-- SVG Icons -->
 <svg style="display: none;">
     <symbol id="icon-cpu" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></symbol>
     <symbol id="icon-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></symbol>
@@ -58,6 +58,7 @@
     <symbol id="icon-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
     <symbol id="icon-send" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></symbol>
     <symbol id="icon-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></symbol>
+    <symbol id="icon-chevron-down" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></symbol>
 </svg>
 
 <!-- Ambient Background -->
@@ -98,30 +99,61 @@
     </header>
 
     <!-- SUB-HEADER / TOOLBAR -->
-    <div class="px-6 md:px-8 py-3 flex gap-4 items-center justify-between border-b border-white/[0.06] bg-white/[0.01] shrink-0">
-        <!-- Model Selector -->
-        <div class="relative w-full max-w-sm group">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-indigo-400">
-                <svg class="w-4 h-4 stroke-current fill-none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5c0-5.523 4.477-10 10-10z"/></svg>
-            </div>
-            <select id="modelSelector" class="w-full pl-10 pr-10 py-2 bg-black/40 border border-white/10 rounded-lg text-sm text-gray-200 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 outline-none appearance-none transition-all hover:bg-white/5 cursor-pointer font-medium">
-                <optgroup label="VISUAL CORE">
-                    <option value="Cluster1|✨ Google: Gemini 2.5 Flash Lite ⚡">Gemini 2.5 Flash Lite</option>
-                    <option value="Cluster1|✨ Google: Gemini 3.0 Pro (Experimental)">Gemini 3.0 Pro Preview</option>
-                    <option value="Cluster1|✨ Google: Gemini 2.5 Pro">Gemini 2.5 Pro</option>
-                </optgroup>
-                <optgroup label="MISTRAL AI">
-                    <option value="Cluster1|🇫🇷 Mistral: Magistral Medium 2509">Mistral Medium</option>
-                    <option value="Cluster1|🇫🇷 Mistral: Pixtral Large (Vision) 🖼️">Pixtral Large (Vision)</option>
-                    <option value="Cluster1|🇫🇷 Mistral: Codestral 2508">Mistral Codestral</option>
-                </optgroup>
-                <optgroup label="LOGIC CORE">
-                     <option value="Cluster2|🚀 DeepSeek R1 Distill Qwen 7B (O Mais Inteligente - Novo!)">DeepSeek R1 (Reasoning)</option>
-                     <option value="Cluster2|🐳 DeepSeek Math 7B (Especialista Antigo)">DeepSeek Math</option>
-                </optgroup>
+    <div class="px-6 md:px-8 py-3 flex gap-4 items-center justify-between border-b border-white/[0.06] bg-white/[0.01] shrink-0 z-50">
+        <!-- Custom Glass Dropdown -->
+        <div class="relative w-full max-w-sm" id="customDropdown">
+            <!-- Hidden Native Select (for Logic) -->
+            <select id="modelSelector" class="hidden">
+                <option value="Cluster1|✨ Google: Gemini 2.5 Flash Lite ⚡">Gemini 2.5 Flash Lite</option>
+                <option value="Cluster1|✨ Google: Gemini 3.0 Pro (Experimental)">Gemini 3.0 Pro Preview</option>
+                <option value="Cluster1|✨ Google: Gemini 2.5 Pro">Gemini 2.5 Pro</option>
+                <option value="Cluster1|🇫🇷 Mistral: Magistral Medium 2509">Mistral Medium</option>
+                <option value="Cluster1|🇫🇷 Mistral: Pixtral Large (Vision) 🖼️">Pixtral Large (Vision)</option>
+                <option value="Cluster1|🇫🇷 Mistral: Codestral 2508">Mistral Codestral</option>
+                <option value="Cluster2|🚀 DeepSeek R1 Distill Qwen 7B (O Mais Inteligente - Novo!)">DeepSeek R1 (Reasoning)</option>
+                <option value="Cluster2|🐳 DeepSeek Math 7B (Especialista Antigo)">DeepSeek Math</option>
             </select>
-            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-500">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+
+            <!-- Trigger Button -->
+            <div onclick="toggleDropdown()" class="dropdown-trigger flex items-center justify-between w-full pl-4 pr-3 py-2.5 bg-black/40 border border-white/10 rounded-xl text-sm text-gray-200 transition-all hover:bg-white/5 hover:border-white/20 active:scale-[0.99]">
+                <div class="flex items-center gap-2.5 overflow-hidden">
+                    <div class="w-1.5 h-1.5 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.6)]"></div>
+                    <span id="selectedModelLabel" class="truncate font-medium">Gemini 2.5 Flash Lite</span>
+                </div>
+                <svg class="w-4 h-4 text-gray-500"><use href="#icon-chevron-down"/></svg>
+            </div>
+
+            <!-- Dropdown Menu -->
+            <div id="dropdownMenu" class="dropdown-menu absolute top-full left-0 w-full mt-2 bg-[#121217] border border-white/10 rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] overflow-hidden z-[100] max-h-[400px] overflow-y-auto">
+                <div class="py-1">
+                    <div class="px-3 py-2 text-[0.7rem] font-bold text-gray-500 uppercase tracking-wider">Visual Core (Google)</div>
+                    <div onclick="selectModel('Cluster1|✨ Google: Gemini 2.5 Flash Lite ⚡', 'Gemini 2.5 Flash Lite')" class="px-4 py-2.5 text-sm text-gray-300 hover:bg-white/5 hover:text-white cursor-pointer transition-colors flex items-center gap-2">
+                        <span class="w-1 h-1 rounded-full bg-blue-500"></span> Gemini 2.5 Flash Lite
+                    </div>
+                    <div onclick="selectModel('Cluster1|✨ Google: Gemini 3.0 Pro (Experimental)', 'Gemini 3.0 Pro Preview')" class="px-4 py-2.5 text-sm text-gray-300 hover:bg-white/5 hover:text-white cursor-pointer transition-colors flex items-center gap-2">
+                        <span class="w-1 h-1 rounded-full bg-blue-400"></span> Gemini 3.0 Pro Preview
+                    </div>
+                    <div onclick="selectModel('Cluster1|✨ Google: Gemini 2.5 Pro', 'Gemini 2.5 Pro')" class="px-4 py-2.5 text-sm text-gray-300 hover:bg-white/5 hover:text-white cursor-pointer transition-colors flex items-center gap-2">
+                        <span class="w-1 h-1 rounded-full bg-blue-600"></span> Gemini 2.5 Pro
+                    </div>
+
+                    <div class="border-t border-white/5 my-1"></div>
+                    <div class="px-3 py-2 text-[0.7rem] font-bold text-gray-500 uppercase tracking-wider">Mistral AI</div>
+                    
+                    <div onclick="selectModel('Cluster1|🇫🇷 Mistral: Magistral Medium 2509', 'Mistral Medium')" class="px-4 py-2.5 text-sm text-gray-300 hover:bg-white/5 hover:text-white cursor-pointer transition-colors flex items-center gap-2">
+                        <span class="w-1 h-1 rounded-full bg-orange-500"></span> Mistral Medium
+                    </div>
+                    <div onclick="selectModel('Cluster1|🇫🇷 Mistral: Pixtral Large (Vision) 🖼️', 'Pixtral Large (Vision)')" class="px-4 py-2.5 text-sm text-gray-300 hover:bg-white/5 hover:text-white cursor-pointer transition-colors flex items-center gap-2">
+                        <span class="w-1 h-1 rounded-full bg-orange-400"></span> Pixtral Large (Vision)
+                    </div>
+
+                    <div class="border-t border-white/5 my-1"></div>
+                    <div class="px-3 py-2 text-[0.7rem] font-bold text-gray-500 uppercase tracking-wider">Logic Core</div>
+
+                    <div onclick="selectModel('Cluster2|🚀 DeepSeek R1 Distill Qwen 7B (O Mais Inteligente - Novo!)', 'DeepSeek R1 (Reasoning)')" class="px-4 py-2.5 text-sm text-gray-300 hover:bg-white/5 hover:text-white cursor-pointer transition-colors flex items-center gap-2">
+                        <span class="w-1 h-1 rounded-full bg-purple-500"></span> DeepSeek R1 (Reasoning)
+                    </div>
+                </div>
             </div>
         </div>
 

@@ -35,9 +35,9 @@ body {
 
 .message {
     width: 100%;
-    margin-bottom: 24px; /* Spacious but not huge */
+    margin-bottom: 24px;
     display: flex;
-    gap: 16px;
+    gap: 20px; /* Increased gap from 16px to 20px */
     animation: fadeIn 0.3s ease-out;
 }
 
@@ -69,7 +69,7 @@ body {
 }
 
 .message.user .avatar {
-    display: none; /* User doesn't need avatar, usually */
+    display: none; 
 }
 
 /* Message Content Container */
@@ -88,25 +88,26 @@ body {
 .message-bubble {
     padding: 12px 18px;
     border-radius: 12px;
-    font-size: 0.95rem; /* 15.2px */
+    font-size: 0.95rem; 
     line-height: 1.6;
     position: relative;
     word-wrap: break-word;
 }
 
-/* User Bubble: Distinct, Accent Color */
+/* User Bubble */
 .message.user .message-bubble {
-    background: #2e2e33; /* Dark Grey/Zinc */
+    background: #2e2e33; 
     color: #fff;
     border-top-right-radius: 2px;
     box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
-/* Bot Bubble: Transparent/Clean */
+/* Bot Bubble - Added subtle background for better readability/highlight */
 .message.bot .message-bubble {
-    background: transparent;
-    padding: 0; /* Remove padding to align with text */
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.03);
     color: var(--text-main);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05); /* Subtle lift */
 }
 
 /* Icons within JS */
@@ -127,10 +128,10 @@ body {
     font-weight: 600; 
 }
 
-/* Lists - Fix "Too Indented" */
+/* Lists */
 .message.bot ul, .message.bot ol { 
     margin-left: 0; 
-    padding-left: 1.2em; /* Reduced from default */
+    padding-left: 1.2em; 
     margin-bottom: 0.8em;
 }
 
@@ -153,7 +154,7 @@ body {
 
 /* Code Blocks (Marked.js) */
 .code-wrapper {
-    background: #0d0e11; /* Very dark */
+    background: #0d0e11; 
     border: 1px solid var(--border-subtle);
     border-radius: 8px;
     margin: 16px 0;
@@ -194,7 +195,7 @@ pre {
     margin: 0;
     padding: 16px;
     overflow-x: auto;
-    max-height: 450px; /* Reduced slightly */
+    max-height: 450px; 
     white-space: pre; 
 }
 
@@ -231,6 +232,26 @@ pre code {
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(5px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+/* Custom Dropdown Styling */
+.dropdown-trigger {
+    cursor: pointer;
+    user-select: none;
+}
+
+.dropdown-menu {
+    transform-origin: top left;
+    transition: all 0.15s ease-out;
+    opacity: 0;
+    transform: scale(0.95);
+    pointer-events: none;
+}
+
+.dropdown-menu.active {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
 }
 
 /* Input Area Overrides */

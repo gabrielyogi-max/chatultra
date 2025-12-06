@@ -43,6 +43,33 @@ window.toggleSound = function() {
     document.getElementById('soundBtn').style.opacity = soundEnabled ? '1' : '0.5';
 }
 
+// --- DROPDOWN LOGIC ---
+window.toggleDropdown = function() {
+    const menu = document.getElementById('dropdownMenu');
+    menu.classList.toggle('active');
+}
+
+window.selectModel = function(value, label) {
+    // Update hidden select for logic
+    const select = document.getElementById('modelSelector');
+    select.value = value;
+    
+    // Update visual label
+    document.getElementById('selectedModelLabel').innerText = label;
+    
+    // Close dropdown
+    document.getElementById('dropdownMenu').classList.remove('active');
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(e) {
+    const dropdown = document.getElementById('customDropdown');
+    const menu = document.getElementById('dropdownMenu');
+    if (dropdown && !dropdown.contains(e.target)) {
+        menu.classList.remove('active');
+    }
+});
+
 window.exportChat = function() {
     let text = "";
     document.querySelectorAll('.message').forEach(msg => {
@@ -144,6 +171,7 @@ window.sendMessage = async function() {
     const text = userInput.value.trim();
     if (!text && !selectedFile) return;
     
+    // Get value from hidden select
     const [cluster, model] = document.getElementById('modelSelector').value.split('|');
     if (!clients[cluster]) return appendMessage('bot', 'Error: Selected Cluster Offline.');
 
@@ -250,3 +278,6 @@ function appendMessage(role, text, isHtml=false) {
     historyDiv.scrollTop = historyDiv.scrollHeight;
     return div.id;
 }
+
+// Expose for debugging/verification
+window.appendMessage = appendMessage;
