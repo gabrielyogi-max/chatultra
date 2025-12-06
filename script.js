@@ -47,8 +47,8 @@ window.exportChat = function() {
     let text = "";
     document.querySelectorAll('.message').forEach(msg => {
         const role = msg.classList.contains('user') ? "USER" : "NEXUS";
-        // Simple extraction, improvements could be made for cleaner text
-        text += `[${role}]: ${msg.innerText.replace('COPY', '')}\n\n`;
+        const content = msg.querySelector('.message-bubble').innerText;
+        text += `[${role}]: ${content}\n\n`;
     });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([text], {type: 'text/plain'}));
@@ -68,6 +68,7 @@ window.handleFileSelect = function(e) {
     document.getElementById('imagePreview').src = URL.createObjectURL(file);
     document.getElementById('imageName').innerText = file.name;
     document.getElementById('imagePreviewContainer').style.display = 'flex';
+    document.getElementById('imagePreviewContainer').classList.remove('hidden');
     // Auto-focus input
     userInput.focus();
 }
@@ -76,6 +77,7 @@ window.clearImage = function() {
     selectedFile = null;
     document.getElementById('fileInput').value = "";
     document.getElementById('imagePreviewContainer').style.display = 'none';
+    document.getElementById('imagePreviewContainer').classList.add('hidden');
 }
 
 window.toggleVoice = function() {
@@ -160,11 +162,13 @@ window.sendMessage = async function() {
     loadingDiv.className = 'message bot';
     loadingDiv.id = loadingId;
     loadingDiv.innerHTML = `
-        <div class="label"><div class="bot-avatar"><svg class="icon-sm"><use href="#icon-cpu"/></svg></div> NEXUS</div>
-        <div class="typing-indicator">
-            <div class="typing-dot"></div>
-            <div class="typing-dot"></div>
-            <div class="typing-dot"></div>
+        <div class="avatar"><svg class="icon-sm" style="width:20px;height:20px;"><use href="#icon-cpu"/></svg></div>
+        <div class="message-content">
+            <div class="typing-container">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            </div>
         </div>
     `;
     historyDiv.appendChild(loadingDiv);
@@ -225,16 +229,21 @@ function appendMessage(role, text, isHtml=false) {
     div.className = `message ${role}`;
     div.id = `msg-${Date.now()}`;
     
-    const label = role === 'user' ? 'YOU' : '<div class="bot-avatar"><svg class="icon-sm"><use href="#icon-cpu"/></svg></div> NEXUS';
-    
+    // Standard Layout: Avatar + Content
+    const avatarHtml = role === 'bot' 
+        ? `<div class="avatar"><svg class="icon-sm" style="width:20px;height:20px;"><use href="#icon-cpu"/></svg></div>`
+        : ``; // User has no avatar to keep it clean
+
     let content = text;
     if (role === 'bot' && !isHtml) {
         content = marked.parse(text);
     }
 
     div.innerHTML = `
-        <div class="label">${label}</div>
-        <div class="message-bubble">${isHtml ? content : content}</div>
+        ${avatarHtml}
+        <div class="message-content">
+            <div class="message-bubble">${isHtml ? content : content}</div>
+        </div>
     `;
     
     historyDiv.appendChild(div);
