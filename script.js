@@ -1,13 +1,17 @@
 import { Client } from "https://cdn.jsdelivr.net/npm/@gradio/client/+esm";
 
-const HF_TOKEN = ""; 
-const CLUSTERS = { "Cluster1": "Madras1/APIDOST", "Cluster2": "Madras1/APISMALL" };
+// --- ⚙️ CONFIGURAÇÃO DOS CLUSTERS ---
+const CLUSTERS = { 
+    "Cluster1": "Madras1/APIDOST",   // O Grandão (Google, Mistral, Groq)
+    "Cluster2": "Madras1/APISMALL"   // O Rápido (DeepSeek, Qwen)
+};
+
 let clients = {};
 let selectedFile = null; 
 let soundEnabled = true;
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-// --- SOUNDS ---
+// --- 🎵 SOUND ENGINE ---
 function playSound(type) {
     if (!soundEnabled) return;
     if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -35,7 +39,9 @@ function playSound(type) {
     }
 }
 
-// --- GLOBAL BINDINGS ---
+// --- 🎛️ UI CONTROLS ---
+
+// Liga/Desliga Som
 window.toggleSound = function() {
     soundEnabled = !soundEnabled;
     const icon = document.getElementById('sndIconUse');
@@ -43,25 +49,20 @@ window.toggleSound = function() {
     document.getElementById('soundBtn').style.opacity = soundEnabled ? '1' : '0.5';
 }
 
-// --- DROPDOWN LOGIC ---
+// Lógica do Dropdown Customizado
 window.toggleDropdown = function() {
     const menu = document.getElementById('dropdownMenu');
     menu.classList.toggle('active');
 }
 
 window.selectModel = function(value, label) {
-    // Update hidden select for logic
     const select = document.getElementById('modelSelector');
     select.value = value;
-    
-    // Update visual label
     document.getElementById('selectedModelLabel').innerText = label;
-    
-    // Close dropdown
     document.getElementById('dropdownMenu').classList.remove('active');
 }
 
-// Close dropdown when clicking outside
+// Fecha o dropdown se clicar fora
 document.addEventListener('click', function(e) {
     const dropdown = document.getElementById('customDropdown');
     const menu = document.getElementById('dropdownMenu');
@@ -70,6 +71,7 @@ document.addEventListener('click', function(e) {
     }
 });
 
+// Exportar conversa
 window.exportChat = function() {
     let text = "";
     document.querySelectorAll('.message').forEach(msg => {
@@ -79,15 +81,17 @@ window.exportChat = function() {
     });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([text], {type: 'text/plain'}));
-    a.download = `nexus_export.txt`;
+    a.download = `nexus_export_${Date.now()}.txt`;
     a.click();
 }
 
+// Limpar conversa
 window.clearChat = function() {
     document.getElementById('chat-history').innerHTML = '';
-    appendMessage('bot', 'System Ready.');
+    appendMessage('bot', 'Memory Core Purged. System Ready.');
 }
 
+// --- 📎 FILE HANDLING ---
 window.handleFileSelect = function(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -96,7 +100,6 @@ window.handleFileSelect = function(e) {
     document.getElementById('imageName').innerText = file.name;
     document.getElementById('imagePreviewContainer').style.display = 'flex';
     document.getElementById('imagePreviewContainer').classList.remove('hidden');
-    // Auto-focus input
     userInput.focus();
 }
 
@@ -107,6 +110,7 @@ window.clearImage = function() {
     document.getElementById('imagePreviewContainer').classList.add('hidden');
 }
 
+// --- 🎙️ VOICE INPUT ---
 window.toggleVoice = function() {
     if (!('webkitSpeechRecognition' in window)) return alert("Voice input not supported in this browser.");
     const btn = document.getElementById('micBtn');
@@ -126,6 +130,7 @@ window.toggleVoice = function() {
     window.recognition = r;
 }
 
+// Copiar código
 window.copyCode = function(btn) {
     const code = btn.closest('.code-wrapper').querySelector('code').innerText;
     navigator.clipboard.writeText(code);
@@ -134,11 +139,12 @@ window.copyCode = function(btn) {
     setTimeout(() => btn.innerHTML = original, 2000);
 }
 
+// Enviar com Enter
 window.handleEnter = function(e) {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
 }
 
-// --- MAIN LOGIC ---
+// --- 🚀 CORE LOGIC ---
 const userInput = document.getElementById('userInput');
 const historyDiv = document.getElementById('chat-history');
 
@@ -148,21 +154,20 @@ function adjustTextarea() {
 }
 userInput.addEventListener('input', adjustTextarea);
 
-// Init
+// Inicialização: Conecta nos Clusters (SEM TOKEN)
 async function init() {
-    // Initial bot message without animation to prevent jump
     const welcomeMsgId = appendMessage('bot', 'Initializing Neural Clusters...', false);
     try {
-        clients['Cluster1'] = await Client.connect(CLUSTERS['Cluster1'], HF_TOKEN ? {hf_token: HF_TOKEN}:{});
-        clients['Cluster2'] = await Client.connect(CLUSTERS['Cluster2'], HF_TOKEN ? {hf_token: HF_TOKEN}:{});
+        // Conexão direta pública
+        clients['Cluster1'] = await Client.connect(CLUSTERS['Cluster1']);
+        clients['Cluster2'] = await Client.connect(CLUSTERS['Cluster2']);
         
-        // Remove initializing message
         const msgEl = document.getElementById(welcomeMsgId);
         if(msgEl) msgEl.remove();
 
-        appendMessage('bot', 'Welcome back, Commander. All systems operational.');
+        appendMessage('bot', '**NEXUS ONLINE.** All Systems Operational.');
     } catch(e) {
-        appendMessage('bot', `Initialization Failed: ${e.message}`);
+        appendMessage('bot', `❌ **Connection Failed:** ${e.message}`);
     }
 }
 init();
@@ -171,20 +176,21 @@ window.sendMessage = async function() {
     const text = userInput.value.trim();
     if (!text && !selectedFile) return;
     
-    // Get value from hidden select
+    // Recupera cluster e modelo
     const [cluster, model] = document.getElementById('modelSelector').value.split('|');
-    if (!clients[cluster]) return appendMessage('bot', 'Error: Selected Cluster Offline.');
+    
+    if (!clients[cluster]) return appendMessage('bot', '⚠️ Error: Cluster Offline or Connecting...');
 
-    // UI Update
+    // Limpa UI
     userInput.value = '';
     userInput.style.height = 'auto';
     let displayHtml = text.replace(/\n/g, '<br>');
-    if (selectedFile) displayHtml += `<br><small>[Attached: ${selectedFile.name}]</small>`;
+    if (selectedFile) displayHtml += `<br><small>📎 Attached: ${selectedFile.name}</small>`;
     
     appendMessage('user', displayHtml, true);
     playSound('message');
 
-    // Typing Indicator
+    // Indicador de "Digitando..."
     const loadingId = `loading-${Date.now()}`;
     const loadingDiv = document.createElement('div');
     loadingDiv.className = 'message bot';
@@ -205,12 +211,11 @@ window.sendMessage = async function() {
     // API Call
     try {
         const result = await clients[cluster].predict("/chat", [
-            { text: text, files: selectedFile ? [selectedFile] : [] },
-            [],
-            model
+            { text: text, files: selectedFile ? [selectedFile] : [] }, 
+            [],     
+            model   
         ]);
         
-        // Remove loading message
         document.getElementById(loadingId).remove();
         
         const response = result.data ? String(result.data[0]) : "No Response.";
@@ -225,7 +230,7 @@ window.sendMessage = async function() {
     }
 }
 
-// --- RENDERER ---
+// --- 🎨 RENDERIZADOR ---
 marked.setOptions({
     highlight: (code, lang) => {
         const l = hljs.getLanguage(lang) ? lang : 'plaintext';
@@ -257,10 +262,9 @@ function appendMessage(role, text, isHtml=false) {
     div.className = `message ${role}`;
     div.id = `msg-${Date.now()}`;
     
-    // Standard Layout: Avatar + Content
     const avatarHtml = role === 'bot' 
         ? `<div class="avatar"><svg class="icon-sm" style="width:20px;height:20px;"><use href="#icon-cpu"/></svg></div>`
-        : ``; // User has no avatar to keep it clean
+        : ``;
 
     let content = text;
     if (role === 'bot' && !isHtml) {
@@ -278,4 +282,3 @@ function appendMessage(role, text, isHtml=false) {
     historyDiv.scrollTop = historyDiv.scrollHeight;
     return div.id;
 }
-
