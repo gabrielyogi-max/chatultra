@@ -1,330 +1,290 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* --- Reset & Base --- */
+/* --- VARIÁVEIS DO SISTEMA --- */
 :root {
-    --bg-deep: #050507; /* Darker Black/Blue */
-    --bg-panel: #0f1014;
-    --border-subtle: rgba(255, 255, 255, 0.08);
-    --accent: #6366f1;
-    --text-main: #e4e4e7;
-    --text-muted: #a1a1aa;
+    --neon-cyan: #00f3ff;
+    --neon-purple: #bc13fe;
+    --bg-dark: #050508;
+    --glass-border: rgba(0, 243, 255, 0.3);
 }
 
 body {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    background-color: var(--bg-deep);
-    color: var(--text-main);
+    background-color: #000;
+    overflow: hidden; /* O scroll fica só na área de chat */
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-}
-::-webkit-scrollbar-track {
-    background: transparent;
-}
-::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-}
-::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.2);
-}
+/* --- 1. EFEITOS DE FUNDO & ATMOSFERA --- */
 
-/* --- Visual Effects (New) --- */
-
-/* Cyberpunk Grid Background */
-.cyber-grid {
+/* Fundo Estrelado Animado */
+.stars {
     position: fixed;
-    inset: 0;
-    background-image: 
-        linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
-    background-size: 50px 50px;
-    animation: gridScroll 20s linear infinite;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: transparent url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/1231630/stars.png') repeat top center;
     z-index: 0;
+    opacity: 0.4;
+    animation: move-stars-back 200s linear infinite;
+}
+
+@keyframes move-stars-back {
+    from { background-position: 0 0; }
+    to { background-position: -10000px 5000px; }
+}
+
+/* Linhas de Scanline (TV Antiga/Monitor) */
+.scanlines {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(
+        to bottom,
+        rgba(255,255,255,0),
+        rgba(255,255,255,0) 50%,
+        rgba(0,0,0,0.2) 50%,
+        rgba(0,0,0,0.2)
+    );
+    background-size: 100% 4px; /* Tamanho da linha */
+    z-index: 5;
+    pointer-events: none; /* Permite clicar através */
+    opacity: 0.3;
+}
+
+/* Vinheta (Escurece as bordas) */
+.screen-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(circle, rgba(0,243,255,0.03) 0%, rgba(0,0,0,0.85) 90%);
+    z-index: 4;
     pointer-events: none;
-    /* Vignette Effect */
-    mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
-    -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
 }
 
-@keyframes gridScroll {
-    0% { background-position: 0 0; }
-    100% { background-position: 50px 50px; }
+/* --- 2. INTERFACE (UI) --- */
+
+/* Borda Brilhante do Terminal Principal */
+.main-terminal-border {
+    border: 1px solid var(--glass-border);
+    box-shadow: inset 0 0 60px rgba(0,0,0,0.9); /* Sombra interna profunda */
 }
 
-/* Glassmorphism (Strong) */
-.glass-effect {
-    background: rgba(10, 10, 15, 0.4);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+/* Scrollbar Futurista (Fina e Neon) */
+.cyber-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+.cyber-scrollbar::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.3);
+}
+.cyber-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--neon-cyan);
+    border-radius: 0; /* Quadrado = Tech */
+    box-shadow: 0 0 10px var(--neon-cyan);
+}
+.cyber-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #fff;
 }
 
-.glass-panel-deep {
-    /* Keeping existing base but enhancing */
-    background: rgba(5, 5, 8, 0.7);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-/* Glowing Button */
-.glow-button {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-}
-
-.glow-button:hover {
-    box-shadow: 0 0 25px rgba(99, 102, 241, 0.5), 0 0 10px rgba(168, 85, 247, 0.3);
-    border-color: rgba(255, 255, 255, 0.4);
-    transform: translateY(-2px);
-    text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
-}
-
-/* --- Chat Layout --- */
+/* --- 3. MENSAGENS DO CHAT --- */
 
 .message {
     width: 100%;
-    margin-bottom: 24px;
     display: flex;
-    gap: 28px;
-    /* Smooth Slide In Animation */
-    animation: slideInSmooth 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-    opacity: 0; /* Start hidden for animation */
+    gap: 20px;
+    animation: slideInTech 0.4s ease-out forwards;
+    opacity: 0;
+    transform: translateY(20px);
+    font-family: 'Rajdhani', sans-serif;
+    letter-spacing: 0.5px;
 }
 
-@keyframes slideInSmooth {
-    0% { 
-        opacity: 0; 
-        transform: translateY(20px) scale(0.98); 
-    }
-    100% { 
-        opacity: 1; 
-        transform: translateY(0) scale(1); 
-    }
+@keyframes slideInTech {
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .message.user {
-    justify-content: flex-end;
+    flex-direction: row-reverse; /* Usuário na direita */
 }
 
-.message.bot {
-    justify-content: flex-start;
-}
-
-/* Avatar */
+/* Avatar Hexagonal/Tech */
 .avatar {
-    width: 32px;
-    height: 32px;
+    width: 42px;
+    height: 42px;
     flex-shrink: 0;
-    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 600;
-    font-size: 0.8rem;
+    border: 1px solid var(--neon-cyan);
+    background: rgba(0, 243, 255, 0.05);
+    /* Recorte angular futurista */
+    clip-path: polygon(20% 0, 100% 0, 100% 80%, 80% 100%, 0 100%, 0 20%);
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.15);
 }
 
-.message.bot .avatar {
-    background: linear-gradient(135deg, #4f46e5, #9333ea);
-    color: white;
-    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
-}
-
-.message.user .avatar {
-    display: none; 
-}
-
-/* Message Content Container */
-.message-content {
-    max-width: 85%;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.message.user .message-content {
-    align-items: flex-end;
-}
-
-/* Bubble Styling */
-.message-bubble {
-    padding: 12px 18px;
-    border-radius: 12px;
-    font-size: 0.95rem; 
-    line-height: 1.6;
-    position: relative;
-    word-wrap: break-word;
-}
-
-/* User Bubble */
+/* Balão do Usuário (Sólido Neon) */
 .message.user .message-bubble {
-    background: #2e2e33; 
+    background: rgba(0, 243, 255, 0.08);
+    border: 1px solid var(--neon-cyan);
     color: #fff;
-    border-top-right-radius: 2px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-    font-family: 'Inter', sans-serif;
+    padding: 12px 20px;
+    border-radius: 2px; /* Cantos retos */
+    border-bottom-right-radius: 15px; /* Detalhe curvo */
+    position: relative;
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.05);
+    max-width: 85%;
 }
 
-/* Bot Bubble */
+/* Balão do Bot (Estilo Log de Sistema) */
 .message.bot .message-bubble {
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.03);
-    color: var(--text-main);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    background: transparent;
+    border-left: 2px solid var(--neon-purple); /* Linha lateral roxa */
+    padding: 4px 24px;
+    color: #cbd5e1;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    text-shadow: 0 0 2px rgba(0,0,0,0.8);
+    max-width: 90%;
 }
 
-/* Icons within JS */
-.icon-sm {
-    width: 18px;
-    height: 18px;
-    stroke: currentColor;
-    stroke-width: 2;
-    fill: none;
+/* Formatação dentro da resposta do Bot */
+.message.bot strong { color: #fff; font-weight: 700; }
+.message.bot p { margin-bottom: 12px; }
+
+/* --- 4. TEXTO GLITCH (LOGO) --- */
+.glitch-text {
+    position: relative;
+    color: #fff;
+}
+/* Cria duas cópias do texto (vermelho e azul) que ficam tremendo */
+.glitch-text::before, .glitch-text::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: var(--bg-dark);
+}
+.glitch-text::before {
+    left: 2px;
+    text-shadow: -1px 0 #ff00c1;
+    clip: rect(44px, 450px, 56px, 0);
+    animation: glitch-anim 5s infinite linear alternate-reverse;
+}
+.glitch-text::after {
+    left: -2px;
+    text-shadow: -1px 0 #00fff9;
+    clip: rect(44px, 450px, 56px, 0);
+    animation: glitch-anim 5s infinite linear alternate-reverse;
 }
 
-/* --- Markdown Styling --- */
-.message.bot p { margin-bottom: 0.8em; }
-.message.bot p:last-child { margin-bottom: 0; }
-
-.message.bot strong { 
-    color: #fff; 
-    font-weight: 600; 
+@keyframes glitch-anim {
+    0% { clip: rect(38px, 9999px, 81px, 0); }
+    5% { clip: rect(66px, 9999px, 16px, 0); }
+    10% { clip: rect(9px, 9999px, 63px, 0); }
+    15% { clip: rect(87px, 9999px, 88px, 0); }
+    20% { clip: rect(2px, 9999px, 12px, 0); }
+    25% { clip: rect(45px, 9999px, 34px, 0); }
+    30% { clip: rect(8px, 9999px, 18px, 0); }
+    100% { clip: rect(22px, 9999px, 76px, 0); }
 }
 
-/* Technical Typography applied to lists/code */
-.message.bot ul, .message.bot ol { 
-    margin-left: 0; 
-    padding-left: 1.2em; 
-    margin-bottom: 0.8em;
+/* --- 5. COMPONENTES INTERATIVOS --- */
+
+/* Itens do Dropdown */
+.cyber-item {
+    padding: 12px 16px;
+    font-size: 0.85rem;
+    color: #94a3b8;
+    border-left: 2px solid transparent; /* Linha invisível */
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+}
+.cyber-item:hover {
+    background: rgba(0, 243, 255, 0.05);
+    color: var(--neon-cyan);
+    border-left: 3px solid var(--neon-cyan); /* Linha aparece */
+    padding-left: 24px; /* Texto desliza pra direita */
+    text-shadow: 0 0 8px var(--neon-cyan);
 }
 
-.message.bot li { 
-    margin-bottom: 0.4em; 
+/* Botões de Ícone */
+.cyber-icon-btn {
+    padding: 10px;
+    color: var(--neon-cyan);
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(0, 243, 255, 0.2);
+    border-radius: 6px;
+    transition: all 0.2s;
+    cursor: pointer;
 }
-.message.bot li::marker {
-    color: #6366f1;
-    font-family: 'JetBrains Mono', monospace;
+.cyber-icon-btn:hover {
+    background: var(--neon-cyan);
+    color: #000;
+    box-shadow: 0 0 15px var(--neon-cyan);
+    transform: translateY(-2px);
+}
+.cyber-icon-btn.danger:hover {
+    background: #ef4444;
+    border-color: #ef4444;
+    color: #fff;
+    box-shadow: 0 0 15px #ef4444;
 }
 
-/* Inline Code */
-.message.bot :not(pre) > code {
-    background: rgba(255, 255, 255, 0.08);
-    color: #e0e7ff;
-    padding: 2px 5px;
-    border-radius: 4px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.85em;
-}
-
-/* Code Blocks */
+/* --- 6. BLOCOS DE CÓDIGO (HIGHLIGHT) --- */
 .code-wrapper {
-    background: #0d0e11; 
-    border: 1px solid var(--border-subtle);
-    border-radius: 8px;
+    background: #08080b;
+    border: 1px solid #333;
+    border-radius: 4px;
     margin: 16px 0;
     overflow: hidden;
+    position: relative;
 }
-
 .code-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 12px;
-    background: rgba(255, 255, 255, 0.03);
-    border-bottom: 1px solid var(--border-subtle);
+    background: #111;
+    border-bottom: 1px solid #333;
+    padding: 6px 16px;
+    display: flex; justify-content: space-between; align-items: center;
 }
-
-.code-lang {
-    font-family: 'JetBrains Mono', monospace; /* Tech font */
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: #94a3b8;
+.code-lang { 
+    font-family: 'Orbitron', sans-serif; 
+    font-size: 0.7rem; 
+    color: var(--neon-cyan);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
 }
-
 .copy-btn {
-    background: transparent;
-    border: none;
-    color: #71717a;
-    font-size: 0.75rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: color 0.2s;
-    font-family: 'JetBrains Mono', monospace; /* Tech font */
+    background: transparent; border: none; color: #666; cursor: pointer;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+    display: flex; align-items: center; gap: 5px;
 }
 .copy-btn:hover { color: #fff; }
 
-pre {
-    margin: 0;
-    padding: 16px;
-    overflow-x: auto;
-    max-height: 450px; 
-    white-space: pre; 
-}
+pre { margin: 0; padding: 15px; overflow-x: auto; }
+pre code { font-family: 'JetBrains Mono', monospace !important; font-size: 0.9em; }
 
-pre code {
-    background: transparent !important;
-    padding: 0 !important;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.85em;
-    line-height: 1.5;
-}
-
-/* Typing Indicator */
+/* --- 7. INDICADOR DE DIGITANDO --- */
 .typing-container {
     display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 0;
+    gap: 6px;
+    padding: 5px 0;
 }
 .typing-dot {
-    width: 5px;
-    height: 5px;
-    background: #71717a;
+    width: 6px;
+    height: 6px;
+    background: var(--neon-cyan);
     border-radius: 50%;
-    animation: bounce 1.4s infinite ease-in-out both;
+    animation: cyber-bounce 1s infinite ease-in-out;
+    box-shadow: 0 0 8px var(--neon-cyan);
 }
-.typing-dot:nth-child(1) { animation-delay: -0.32s; }
-.typing-dot:nth-child(2) { animation-delay: -0.16s; }
+.typing-dot:nth-child(1) { animation-delay: 0s; }
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
 
-@keyframes bounce {
-    0%, 80%, 100% { transform: scale(0); }
-    40% { transform: scale(1); background: #6366f1; }
-}
-
-/* Custom Dropdown Styling */
-.dropdown-trigger {
-    cursor: pointer;
-    user-select: none;
+@keyframes cyber-bounce {
+    0%, 100% { transform: translateY(0); opacity: 0.4; }
+    50% { transform: translateY(-6px); opacity: 1; }
 }
 
-.dropdown-menu {
-    transform-origin: top left;
-    transition: all 0.15s ease-out;
-    opacity: 0;
-    transform: scale(0.95);
-    pointer-events: none;
-}
-
-.dropdown-menu.active {
-    opacity: 1;
-    transform: scale(1);
-    pointer-events: auto;
-}
-
-/* Input Area Overrides - Enhanced Glass */
-.input-glass {
-    background: rgba(20, 20, 25, 0.6);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-top: 1px solid var(--border-subtle);
+/* Ajuste Mobile */
+@media (max-width: 768px) {
+    .message.user .message-bubble { max-width: 95%; }
+    .message.bot .message-bubble { max-width: 100%; padding-right: 5px; }
+    .stars { display: none; } /* Otimização de performance */
 }
