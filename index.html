@@ -3,47 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NEXUS // INTELLIGENCE</title>
+    <title>NEXUS // ULTRA</title>
     
-    <!-- Dependencies -->
+    <!-- Dependências: Markdown & Syntax Highlight -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark-reasonable.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     
-    <!-- Fonts -->
+    <!-- Fontes Sci-Fi: Orbitron (Títulos), Rajdhani (Texto), JetBrains Mono (Código) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     
-    <!-- Tailwind CSS -->
+    <!-- Tailwind CSS com Configuração Neon -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        bgDeep: '#050507',
-                        accentPrimary: '#6366f1',
-                        accentSecondary: '#a855f7',
-                        textPrimary: '#f8fafc',
-                        textSecondary: '#94a3b8',
+                        neonCyan: '#00f3ff',
+                        neonPurple: '#bc13fe',
+                        bgDeep: '#020205',
+                        glass: 'rgba(10, 10, 16, 0.6)',
                     },
                     fontFamily: {
-                        ui: ['Inter', 'sans-serif'],
+                        header: ['Orbitron', 'sans-serif'],
+                        body: ['Rajdhani', 'sans-serif'],
                         code: ['JetBrains Mono', 'monospace'],
                     },
                     animation: {
-                        'slide-up': 'slideUpFade 0.5s ease-out forwards',
+                        'pulse-glow': 'pulseGlow 2s infinite',
                     }
                 }
             }
         }
     </script>
+    
+    <!-- CSS Customizado (Scanlines, Glitch, etc) -->
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-bgDeep text-textPrimary font-ui flex justify-center items-center h-full m-0 overflow-hidden text-[15px] antialiased selection:bg-accentPrimary selection:text-white">
+<body class="bg-bgDeep text-white h-full overflow-hidden antialiased selection:bg-neonCyan selection:text-black">
 
-<!-- SVG Icons -->
+<!-- --- EFEITOS VISUAIS DE FUNDO --- -->
+<div class="screen-overlay"></div>
+<div class="scanlines"></div>
+<div class="stars"></div>
+
+<!-- --- ÍCONES SVG (Carregados ocultos para uso via ID) --- -->
 <svg style="display: none;">
     <symbol id="icon-cpu" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></symbol>
     <symbol id="icon-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></symbol>
@@ -58,43 +65,39 @@
     <symbol id="icon-chevron-down" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></symbol>
 </svg>
 
-<!-- Ambient Background (Cyberpunk Grid) -->
-<div class="cyber-grid"></div>
-
-<!-- Main App Container -->
-<div class="relative z-10 w-full h-full md:w-[95%] md:max-w-[1600px] md:h-[95vh] md:rounded-2xl flex flex-col overflow-hidden glass-panel-deep shadow-2xl border border-white/5">
+<!-- --- MAIN CONTAINER (Moldura do Terminal) --- -->
+<div class="relative z-10 w-full h-full md:w-[98%] md:max-w-[1800px] md:h-[96vh] md:rounded-lg flex flex-col overflow-hidden main-terminal-border shadow-[0_0_50px_rgba(0,243,255,0.15)] bg-black/80 backdrop-blur-md">
     
-    <!-- HEADER -->
-    <header class="h-16 px-6 md:px-8 flex items-center justify-between border-b border-white/[0.06] glass-effect shrink-0 z-20">
+    <!-- 1. HEADER -->
+    <header class="h-20 px-8 flex items-center justify-between border-b border-neonCyan/20 bg-neonCyan/5 shrink-0 z-20 relative overflow-hidden">
+        <!-- Linha Decorativa Superior -->
+        <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-neonCyan to-transparent opacity-50"></div>
+
         <!-- Logo -->
-        <div class="flex items-center gap-4">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.4)] relative group overflow-hidden">
-                <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out"></div>
-                <svg class="w-5 h-5 stroke-white relative z-10 drop-shadow-md"><use href="#icon-cpu"/></svg>
+        <div class="flex items-center gap-5">
+            <div class="w-12 h-12 rounded bg-bgDeep border border-neonCyan flex items-center justify-center shadow-[0_0_15px_rgba(0,243,255,0.3)] relative group">
+                <div class="absolute inset-0 bg-neonCyan/20 animate-pulse"></div>
+                <svg class="w-6 h-6 stroke-neonCyan relative z-10"><use href="#icon-cpu"/></svg>
             </div>
             <div class="flex flex-col">
-                <span class="font-bold text-base tracking-wide text-white leading-none font-ui">NEXUS</span>
-                <span class="text-[0.65rem] tracking-[0.2em] text-indigo-300 font-medium opacity-80 mt-1 font-code">INTELLIGENCE CORE</span>
+                <h1 class="font-header font-black text-2xl tracking-widest text-white glitch-text" data-text="NEXUS">NEXUS</h1>
+                <span class="text-[0.6rem] tracking-[0.4em] text-neonCyan font-code uppercase">System v2.5 // Online</span>
             </div>
         </div>
         
-        <!-- Status & Actions -->
-        <div class="flex items-center gap-6">
-            <div class="hidden md:flex items-center gap-2 bg-white/[0.03] px-3 py-1.5 rounded-full border border-white/[0.05]">
-                <span class="relative flex h-2 w-2">
-                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                </span>
-                <span class="text-[0.7rem] font-code font-medium text-emerald-400 tracking-wide">SYSTEM OPERATIONAL</span>
-            </div>
+        <!-- Status Badge -->
+        <div class="hidden md:flex items-center gap-3 px-4 py-2 bg-black/50 border border-neonCyan/30 rounded skew-x-[-10deg]">
+            <div class="w-2 h-2 bg-neonCyan rounded-full shadow-[0_0_10px_#00f3ff] animate-pulse"></div>
+            <span class="text-xs font-header text-neonCyan skew-x-[10deg] tracking-wider">SECURE CONNECTION</span>
         </div>
     </header>
 
-    <!-- SUB-HEADER / TOOLBAR -->
-    <div class="px-6 md:px-8 py-3 flex gap-4 items-center justify-between border-b border-white/[0.06] bg-white/[0.01] shrink-0 z-50">
-        <!-- Custom Glass Dropdown -->
+    <!-- 2. TOOLBAR (Controles e Seleção de IA) -->
+    <div class="px-8 py-4 flex gap-4 items-center justify-between border-b border-white/5 bg-black/20 shrink-0 z-50">
+        
+        <!-- Dropdown Cyberpunk -->
         <div class="relative w-full max-w-sm font-code" id="customDropdown">
-            <!-- Hidden Native Select (Used for Logic) -->
+            <!-- Select Oculto (Usado pela lógica do JS) -->
             <select id="modelSelector" class="hidden">
                 <!-- Cluster 1: Google -->
                 <option value="Cluster1|✨ Google: Gemini 2.5 Flash Lite ⚡">Gemini 2.5 Flash Lite</option>
@@ -113,160 +116,123 @@
                 <option value="Cluster1|☁️ Groq: GPT OSS 20B (OpenAI)">GPT OSS 20B</option>
                 <!-- Cluster 1: Local -->
                 <option value="Cluster1|🔥 Local H200: Qwen 2.5 Coder 32B">Local: Qwen 2.5 Coder</option>
-                <!-- Cluster 2: DeepSeek & Qwen (Small/Logic) -->
+                <!-- Cluster 2: DeepSeek & Qwen -->
                 <option value="Cluster2|🚀 DeepSeek R1 Distill Qwen 7B (O Mais Inteligente - Novo!)">DeepSeek R1 (Reasoning)</option>
                 <option value="Cluster2|🐳 DeepSeek Math 7B (Especialista Antigo)">DeepSeek Math</option>
                 <option value="Cluster2|🧪 Qwen 3 4B Instruct (Experimental)">Qwen 3 (Experimental)</option>
                 <option value="Cluster2|🌟 Qwen 2.5 7B Instruct (Clássico e Estável)">Qwen 2.5 7B</option>
             </select>
 
-            <!-- Trigger Button -->
-            <div onclick="toggleDropdown()" class="dropdown-trigger flex items-center justify-between w-full pl-4 pr-3 py-2.5 bg-black/40 border border-white/10 rounded-xl text-sm text-gray-200 transition-all hover:bg-white/5 hover:border-white/20 active:scale-[0.99]">
-                <div class="flex items-center gap-2.5 overflow-hidden">
-                    <div class="w-1.5 h-1.5 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.6)]"></div>
-                    <span id="selectedModelLabel" class="truncate font-medium">Gemini 2.5 Flash Lite</span>
+            <!-- Botão Visível do Dropdown -->
+            <div onclick="toggleDropdown()" class="dropdown-trigger flex items-center justify-between w-full pl-4 pr-3 py-2 bg-black/60 border border-neonCyan/30 rounded text-sm text-neonCyan hover:bg-neonCyan/10 hover:border-neonCyan hover:shadow-[0_0_15px_rgba(0,243,255,0.2)] transition-all cursor-pointer">
+                <div class="flex items-center gap-3">
+                    <div class="w-2 h-2 bg-neonCyan rotate-45"></div>
+                    <span id="selectedModelLabel" class="truncate font-header tracking-wide text-xs md:text-sm">Gemini 2.5 Flash Lite</span>
                 </div>
-                <svg class="w-4 h-4 text-gray-500"><use href="#icon-chevron-down"/></svg>
+                <svg class="w-4 h-4 text-neonCyan/50"><use href="#icon-chevron-down"/></svg>
             </div>
 
-            <!-- Dropdown Menu List -->
-            <div id="dropdownMenu" class="dropdown-menu absolute top-full left-0 w-full mt-2 bg-[#0a0a0e] border border-white/10 rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.8)] overflow-hidden z-[100] max-h-[500px] overflow-y-auto backdrop-blur-xl">
+            <!-- Lista de Opções do Menu -->
+            <div id="dropdownMenu" class="dropdown-menu absolute top-full left-0 w-full mt-2 bg-[#050508] border border-neonCyan/30 rounded shadow-[0_0_30px_rgba(0,0,0,0.9)] overflow-hidden z-[100] max-h-[500px] overflow-y-auto cyber-scrollbar">
                 
-                <!-- Section: Google -->
-                <div class="px-3 py-2 text-[0.65rem] font-bold text-blue-400/80 uppercase tracking-widest bg-white/[0.02]">Google // Visual Core</div>
-                
-                <div onclick="selectModel('Cluster1|✨ Google: Gemini 2.5 Flash Lite ⚡', 'Gemini 2.5 Flash Lite')" class="group px-4 py-2 text-sm text-gray-300 hover:bg-blue-500/10 hover:text-blue-200 cursor-pointer transition-colors flex items-center gap-3">
-                    <div class="w-1 h-1 rounded-full bg-blue-500 group-hover:shadow-[0_0_5px_currentColor]"></div> Gemini 2.5 Flash Lite ⚡
-                </div>
-                <div onclick="selectModel('Cluster1|✨ Google: Gemini 3.0 Pro (Experimental)', 'Gemini 3.0 Pro')" class="group px-4 py-2 text-sm text-gray-300 hover:bg-blue-500/10 hover:text-blue-200 cursor-pointer transition-colors flex items-center gap-3">
-                    <div class="w-1 h-1 rounded-full bg-blue-400 group-hover:shadow-[0_0_5px_currentColor]"></div> Gemini 3.0 Pro (Exp)
-                </div>
-                <div onclick="selectModel('Cluster1|✨ Google: Gemini 2.5 Pro', 'Gemini 2.5 Pro')" class="group px-4 py-2 text-sm text-gray-300 hover:bg-blue-500/10 hover:text-blue-200 cursor-pointer transition-colors flex items-center gap-3">
-                    <div class="w-1 h-1 rounded-full bg-blue-600 group-hover:shadow-[0_0_5px_currentColor]"></div> Gemini 2.5 Pro
-                </div>
-                <div onclick="selectModel('Cluster1|✨ Google: Gemini 2.5 Flash', 'Gemini 2.5 Flash')" class="group px-4 py-2 text-sm text-gray-300 hover:bg-blue-500/10 hover:text-blue-200 cursor-pointer transition-colors flex items-center gap-3">
-                    <div class="w-1 h-1 rounded-full bg-blue-300 group-hover:shadow-[0_0_5px_currentColor]"></div> Gemini 2.5 Flash
-                </div>
+                <div class="px-3 py-2 text-[0.6rem] font-bold text-neonPurple uppercase tracking-widest border-b border-white/5 bg-white/[0.02]">Google // Visual Core</div>
+                <div onclick="selectModel('Cluster1|✨ Google: Gemini 2.5 Flash Lite ⚡', 'Gemini 2.5 Flash Lite')" class="cyber-item">Gemini 2.5 Flash Lite</div>
+                <div onclick="selectModel('Cluster1|✨ Google: Gemini 3.0 Pro (Experimental)', 'Gemini 3.0 Pro')" class="cyber-item">Gemini 3.0 Pro (Exp)</div>
+                <div onclick="selectModel('Cluster1|✨ Google: Gemini 2.5 Pro', 'Gemini 2.5 Pro')" class="cyber-item">Gemini 2.5 Pro</div>
+                <div onclick="selectModel('Cluster1|✨ Google: Gemini 2.5 Flash', 'Gemini 2.5 Flash')" class="cyber-item">Gemini 2.5 Flash</div>
 
-                <!-- Section: Mistral -->
-                <div class="border-t border-white/5"></div>
-                <div class="px-3 py-2 text-[0.65rem] font-bold text-orange-400/80 uppercase tracking-widest bg-white/[0.02]">Mistral AI // France</div>
+                <div class="px-3 py-2 text-[0.6rem] font-bold text-neonPurple uppercase tracking-widest border-b border-white/5 bg-white/[0.02] mt-1">Logic & Reasoning</div>
+                <div onclick="selectModel('Cluster2|🚀 DeepSeek R1 Distill Qwen 7B (O Mais Inteligente - Novo!)', 'DeepSeek R1 (Reasoning)')" class="cyber-item">DeepSeek R1 (Reasoning)</div>
+                <div onclick="selectModel('Cluster2|🐳 DeepSeek Math 7B (Especialista Antigo)', 'DeepSeek Math')" class="cyber-item">DeepSeek Math</div>
 
-                <div onclick="selectModel('Cluster1|🇫🇷 Mistral: Pixtral Large (Vision) 🖼️', 'Pixtral Large (Vision)')" class="group px-4 py-2 text-sm text-gray-300 hover:bg-orange-500/10 hover:text-orange-200 cursor-pointer transition-colors flex items-center gap-3">
-                    <div class="w-1 h-1 rounded-full bg-orange-500 group-hover:shadow-[0_0_5px_currentColor]"></div> Pixtral Large (Vision)
-                </div>
-                <div onclick="selectModel('Cluster1|🇫🇷 Mistral: Codestral 2508', 'Mistral Codestral')" class="group px-4 py-2 text-sm text-gray-300 hover:bg-orange-500/10 hover:text-orange-200 cursor-pointer transition-colors flex items-center gap-3">
-                    <div class="w-1 h-1 rounded-full bg-yellow-500 group-hover:shadow-[0_0_5px_currentColor]"></div> Codestral 2508
-                </div>
-                <div onclick="selectModel('Cluster1|🇫🇷 Mistral: Large 2512 (Dez/25)', 'Mistral Large 2512')" class="group px-4 py-2 text-sm text-gray-300 hover:bg-orange-500/10 hover:text-orange-200 cursor-pointer transition-colors flex items-center gap-3">
-                    <div class="w-1 h-1 rounded-full bg-orange-600 group-hover:shadow-[0_0_5px_currentColor]"></div> Mistral Large 2512
-                </div>
+                <div class="px-3 py-2 text-[0.6rem] font-bold text-neonPurple uppercase tracking-widest border-b border-white/5 bg-white/[0.02] mt-1">Mistral AI</div>
+                <div onclick="selectModel('Cluster1|🇫🇷 Mistral: Pixtral Large (Vision) 🖼️', 'Pixtral Large (Vision)')" class="cyber-item">Pixtral Large (Vision)</div>
+                <div onclick="selectModel('Cluster1|🇫🇷 Mistral: Codestral 2508', 'Mistral Codestral')" class="cyber-item">Mistral Codestral</div>
 
-                <!-- Section: Groq -->
-                <div class="border-t border-white/5"></div>
-                <div class="px-3 py-2 text-[0.65rem] font-bold text-cyan-400/80 uppercase tracking-widest bg-white/[0.02]">Groq // Hyper Speed</div>
+                <div class="px-3 py-2 text-[0.6rem] font-bold text-neonPurple uppercase tracking-widest border-b border-white/5 bg-white/[0.02] mt-1">Groq & Speed</div>
+                <div onclick="selectModel('Cluster1|☁️ Groq: Llama 3.3 70B', 'Llama 3.3 70B')" class="cyber-item">Llama 3.3 70B</div>
+                <div onclick="selectModel('Cluster1|☁️ Groq: GPT OSS 120B (OpenAI)', 'GPT OSS 120B')" class="cyber-item">GPT OSS 120B</div>
 
-                <div onclick="selectModel('Cluster1|☁️ Groq: Llama 3.3 70B', 'Llama 3.3 70B')" class="group px-4 py-2 text-sm text-gray-300 hover:bg-cyan-500/10 hover:text-cyan-200 cursor-pointer transition-colors flex items-center gap-3">
-                    <div class="w-1 h-1 rounded-full bg-cyan-500 group-hover:shadow-[0_0_5px_currentColor]"></div> Llama 3.3 70B
-                </div>
-                <div onclick="selectModel('Cluster1|☁️ Groq: GPT OSS 120B (OpenAI)', 'GPT OSS 120B')" class="group px-4 py-2 text-sm text-gray-300 hover:bg-cyan-500/10 hover:text-cyan-200 cursor-pointer transition-colors flex items-center gap-3">
-                    <div class="w-1 h-1 rounded-full bg-cyan-600 group-hover:shadow-[0_0_5px_currentColor]"></div> GPT OSS 120B
-                </div>
-
-                <!-- Section: Logic & Local -->
-                <div class="border-t border-white/5"></div>
-                <div class="px-3 py-2 text-[0.65rem] font-bold text-purple-400/80 uppercase tracking-widest bg-white/[0.02]">Logic & Reasoning</div>
-
-                <div onclick="selectModel('Cluster2|🚀 DeepSeek R1 Distill Qwen 7B (O Mais Inteligente - Novo!)', 'DeepSeek R1 (Reasoning)')" class="group px-4 py-2 text-sm text-gray-300 hover:bg-purple-500/10 hover:text-purple-200 cursor-pointer transition-colors flex items-center gap-3">
-                    <div class="w-1 h-1 rounded-full bg-purple-500 group-hover:shadow-[0_0_5px_currentColor]"></div> DeepSeek R1 (Reasoning)
-                </div>
-                <div onclick="selectModel('Cluster2|🐳 DeepSeek Math 7B (Especialista Antigo)', 'DeepSeek Math')" class="group px-4 py-2 text-sm text-gray-300 hover:bg-indigo-500/10 hover:text-indigo-200 cursor-pointer transition-colors flex items-center gap-3">
-                    <div class="w-1 h-1 rounded-full bg-indigo-500 group-hover:shadow-[0_0_5px_currentColor]"></div> DeepSeek Math
-                </div>
-                <div onclick="selectModel('Cluster1|🔥 Local H200: Qwen 2.5 Coder 32B', 'Local: Qwen 2.5 Coder')" class="group px-4 py-2 text-sm text-gray-300 hover:bg-red-500/10 hover:text-red-200 cursor-pointer transition-colors flex items-center gap-3">
-                    <div class="w-1 h-1 rounded-full bg-red-500 group-hover:shadow-[0_0_5px_currentColor]"></div> Local H200 (Qwen Coder)
-                </div>
-                <div onclick="selectModel('Cluster2|🧪 Qwen 3 4B Instruct (Experimental)', 'Qwen 3 (Exp)')" class="group px-4 py-2 text-sm text-gray-300 hover:bg-pink-500/10 hover:text-pink-200 cursor-pointer transition-colors flex items-center gap-3">
-                    <div class="w-1 h-1 rounded-full bg-pink-500 group-hover:shadow-[0_0_5px_currentColor]"></div> Qwen 3 4B (Exp)
-                </div>
-                <div onclick="selectModel('Cluster2|🌟 Qwen 2.5 7B Instruct (Clássico e Estável)', 'Qwen 2.5 7B')" class="group px-4 py-2 text-sm text-gray-300 hover:bg-pink-500/10 hover:text-pink-200 cursor-pointer transition-colors flex items-center gap-3">
-                    <div class="w-1 h-1 rounded-full bg-pink-500 group-hover:shadow-[0_0_5px_currentColor]"></div> Qwen 2.5 7B
-                </div>
+                <div class="px-3 py-2 text-[0.6rem] font-bold text-red-500 uppercase tracking-widest border-b border-white/5 bg-white/[0.02] mt-1">Local Hardware</div>
+                <div onclick="selectModel('Cluster1|🔥 Local H200: Qwen 2.5 Coder 32B', 'Local: Qwen 2.5 Coder')" class="cyber-item" style="color:#f87171">Local H200 (Qwen Coder)</div>
             </div>
         </div>
 
-        <!-- Quick Actions -->
-        <div class="flex items-center gap-2">
-            <button onclick="toggleSound()" id="soundBtn" class="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors" title="Sound Effects">
-                <svg class="w-4 h-4 stroke-current stroke-2 fill-none"><use href="#icon-volume-2" id="sndIconUse"/></svg>
+        <!-- Botões de Ação Rápida -->
+        <div class="flex items-center gap-3">
+            <button onclick="toggleSound()" id="soundBtn" class="cyber-icon-btn" title="Sound Effects">
+                <svg class="w-4 h-4 stroke-current"><use href="#icon-volume-2" id="sndIconUse"/></svg>
             </button>
-            <div class="w-px h-4 bg-white/10 mx-1"></div>
-            <button onclick="exportChat()" class="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors" title="Export">
-                <svg class="w-4 h-4 stroke-current stroke-2 fill-none"><use href="#icon-download"/></svg>
+            <button onclick="exportChat()" class="cyber-icon-btn" title="Export">
+                <svg class="w-4 h-4 stroke-current"><use href="#icon-download"/></svg>
             </button>
-            <button onclick="clearChat()" class="p-2 text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-lg transition-colors" title="Clear">
-                <svg class="w-4 h-4 stroke-current stroke-2 fill-none"><use href="#icon-trash"/></svg>
+            <button onclick="clearChat()" class="cyber-icon-btn danger" title="Clear">
+                <svg class="w-4 h-4 stroke-current"><use href="#icon-trash"/></svg>
             </button>
         </div>
     </div>
 
-    <!-- CHAT AREA -->
-    <div id="chat-history" class="flex-1 overflow-y-auto px-6 py-8 flex flex-col scroll-smooth">
-        <div class="w-full max-w-4xl mx-auto flex flex-col gap-8 pb-4">
-            <!-- Messages injected here -->
-        </div>
+    <!-- 3. ÁREA DE CHAT (As mensagens são inseridas aqui) -->
+    <div id="chat-history" class="flex-1 overflow-y-auto px-4 md:px-8 py-8 flex flex-col gap-6 scroll-smooth cyber-scrollbar relative z-10">
+        <!-- JS insere mensagens aqui -->
     </div>
 
-    <!-- FOOTER / INPUT -->
-    <div class="relative z-20 shrink-0 pb-6 pt-2 px-4 md:px-0">
-        <div class="w-full max-w-4xl mx-auto">
-            <div class="input-dock rounded-2xl p-2 glass-effect">
-                <!-- Image Preview -->
-                <div id="imagePreviewContainer" class="hidden px-4 py-3 border-b border-white/5 flex items-center justify-between animate-slide-up">
+    <!-- 4. FOOTER (Input e Comandos) -->
+    <div class="relative z-20 shrink-0 pb-6 pt-2 px-4 md:px-8">
+        <div class="w-full max-w-5xl mx-auto">
+            <div class="bg-black/40 border border-neonCyan/30 rounded-lg p-2 backdrop-blur-md shadow-[0_0_20px_rgba(0,0,0,0.5)] relative group focus-within:border-neonCyan focus-within:shadow-[0_0_25px_rgba(0,243,255,0.2)] transition-all">
+                
+                <!-- Cantoneiras Decorativas (Estilo HUD) -->
+                <div class="absolute top-0 left-0 w-2 h-2 border-l border-t border-neonCyan"></div>
+                <div class="absolute top-0 right-0 w-2 h-2 border-r border-t border-neonCyan"></div>
+                <div class="absolute bottom-0 left-0 w-2 h-2 border-l border-b border-neonCyan"></div>
+                <div class="absolute bottom-0 right-0 w-2 h-2 border-r border-b border-neonCyan"></div>
+
+                <!-- Preview de Imagem Anexada -->
+                <div id="imagePreviewContainer" class="hidden px-4 py-3 border-b border-neonCyan/20 flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="relative group">
-                            <img id="imagePreview" alt="Preview" class="h-10 w-10 object-cover rounded-lg border border-white/10 shadow-sm">
-                            <div class="absolute inset-0 bg-black/50 rounded-lg hidden group-hover:flex items-center justify-center">
-                                <svg class="w-4 h-4 stroke-white"><use href="#icon-check"/></svg>
-                            </div>
-                        </div>
-                        <div class="flex flex-col">
-                            <span class="text-xs font-semibold text-indigo-300 font-code">Image Attached</span>
-                            <span id="imageName" class="text-[0.65rem] text-gray-500 truncate max-w-[150px] font-code">filename.png</span>
-                        </div>
+                        <img id="imagePreview" alt="Preview" class="h-10 w-10 object-cover rounded border border-neonCyan/50">
+                        <span id="imageName" class="text-xs text-neonCyan font-code">file.png</span>
                     </div>
-                    <button onclick="clearImage()" class="text-gray-500 hover:text-white transition-colors">
-                        <svg class="w-4 h-4 stroke-current stroke-2"><use href="#icon-trash"/></svg>
-                    </button>
+                    <button onclick="clearImage()" class="text-neonPurple hover:text-white"><svg class="w-4 h-4"><use href="#icon-trash"/></svg></button>
                 </div>
 
-                <!-- Input Controls -->
-                <div class="flex items-end gap-2 p-1">
+                <!-- Barra de Controle e Input -->
+                <div class="flex items-end gap-3 p-1">
                     <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="handleFileSelect(event)">
                     
-                    <button class="w-10 h-10 rounded-xl flex items-center justify-center text-gray-400 hover:text-indigo-400 hover:bg-indigo-500/10 transition-all duration-200" onclick="document.getElementById('fileInput').click()" title="Attach">
-                        <svg class="w-5 h-5 stroke-current stroke-2 fill-none"><use href="#icon-paperclip"/></svg>
+                    <!-- Botão Anexar -->
+                    <button class="w-10 h-10 flex items-center justify-center text-neonCyan/70 hover:text-neonCyan hover:bg-neonCyan/10 transition-all rounded" onclick="document.getElementById('fileInput').click()" title="Upload Image">
+                        <svg class="w-5 h-5 stroke-current"><use href="#icon-paperclip"/></svg>
                     </button>
 
-                    <textarea id="userInput" placeholder="Ask Nexus Intelligence..." onkeypress="handleEnter(event)" rows="1" class="w-full bg-transparent border-0 text-gray-100 placeholder-gray-500 focus:ring-0 py-2.5 px-2 text-[0.95rem] resize-none max-h-[200px] leading-relaxed"></textarea>
+                    <!-- Área de Texto -->
+                    <textarea id="userInput" placeholder="COMMANDER: Awaiting Input..." onkeypress="handleEnter(event)" rows="1" class="w-full bg-transparent border-0 text-white placeholder-neonCyan/30 focus:ring-0 py-2.5 px-2 text-base font-body resize-none max-h-[200px] leading-relaxed"></textarea>
 
-                    <button id="micBtn" onclick="toggleVoice()" class="w-10 h-10 rounded-xl flex items-center justify-center text-gray-400 hover:text-rose-400 hover:bg-rose-500/10 transition-all duration-200 [&.active]:text-rose-500 [&.active]:animate-pulse" title="Voice">
-                        <svg class="w-5 h-5 stroke-current stroke-2 fill-none"><use href="#icon-mic"/></svg>
+                    <!-- Botão Microfone -->
+                    <button id="micBtn" onclick="toggleVoice()" class="w-10 h-10 flex items-center justify-center text-neonCyan/70 hover:text-neonPurple hover:bg-neonPurple/10 transition-all rounded" title="Voice Command">
+                        <svg class="w-5 h-5 stroke-current"><use href="#icon-mic"/></svg>
                     </button>
 
-                    <button id="sendBtn" class="h-10 px-6 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold rounded-xl glow-button flex items-center gap-2" onclick="sendMessage()">
-                        <span>SEND</span>
-                        <svg class="w-3.5 h-3.5 stroke-current stroke-2 fill-none"><use href="#icon-send"/></svg>
+                    <!-- Botão Enviar -->
+                    <button id="sendBtn" class="h-10 px-6 bg-neonCyan/10 border border-neonCyan/50 hover:bg-neonCyan hover:text-black text-neonCyan font-header font-bold tracking-wider rounded transition-all duration-300 shadow-[0_0_10px_rgba(0,243,255,0.1)] hover:shadow-[0_0_20px_rgba(0,243,255,0.6)] flex items-center gap-2" onclick="sendMessage()">
+                        <span>ENGAGE</span>
+                        <svg class="w-3.5 h-3.5 stroke-current fill-none"><use href="#icon-send"/></svg>
                     </button>
                 </div>
             </div>
-            <div class="text-center mt-3">
-                 <p class="text-[0.65rem] text-gray-600 font-code">NEXUS AI SYSTEMS v2.5.0 // SECURE CONNECTION ESTABLISHED</p>
+            
+            <!-- Dados Técnicos Fictícios (Rodapé) -->
+            <div class="text-center mt-3 flex justify-center gap-4 text-[0.6rem] text-neonCyan/40 font-code uppercase tracking-widest">
+                <span>Memory: 64TB</span>
+                <span>Latency: 12ms</span>
+                <span>Encryption: AES-256</span>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Lógica do JS -->
 <script type="module" src="script.js"></script>
 
 </body>
